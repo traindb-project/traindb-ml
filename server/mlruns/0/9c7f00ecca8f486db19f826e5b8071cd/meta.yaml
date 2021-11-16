@@ -1,0 +1,15 @@
+artifact_uri: file:///E:/2021-PROJECT/ML-AQP-2021/ETRIMLClient/server/mlruns/0/9c7f00ecca8f486db19f826e5b8071cd/artifacts
+end_time: 1635908019179
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+name: ''
+run_id: 9c7f00ecca8f486db19f826e5b8071cd
+run_uuid: 9c7f00ecca8f486db19f826e5b8071cd
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1635908018265
+status: 3
+tags: []
+user_id: cto
