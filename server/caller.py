@@ -46,6 +46,8 @@ event = {}
 
 sql_string = args.sql
 
+print(f'# SQL input: {sql_string}')
+
 if (" model " in sql_string):
 #    sql_string.replace(" model "," ")
     event['sql_string'] = sql_string
