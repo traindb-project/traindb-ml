@@ -41,3 +41,9 @@ Refer to https://github.com/traindb-project/traindb-ml/blob/main/install-script/
 
 ## Java client example
 - https://github.com/traindb-project/traindb-ml/blob/main/restapi-client/JavaRestClientTest.java 
+
+## Training data path
+- put .csv files for training to traindb-ml/server/etrimlwarehouse/ folder
+- csv file example: https://github.com/traindb-project/traindb-ml/blob/main/server/etrimlwarehouse/instacart_order_product_600k.csv
+
+
