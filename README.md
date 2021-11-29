@@ -14,6 +14,8 @@ Setup
 9. pip uninstall gensim
 10. pip install gensim==3.8.3
 
+Refer to https://github.com/traindb-project/traindb-ml/blob/main/install-script/install_traindb-ml.sh
+
 ## Restful API service testing
 
 1. cd server
