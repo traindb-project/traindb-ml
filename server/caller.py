@@ -14,6 +14,8 @@ import argparse
 parser = argparse.ArgumentParser()
 parser.add_argument('-a','-host',help='{host ip (defalut=127.0.0.1)}',dest='host',required=False)
 parser.add_argument('-p','-port',help='{port number (defalut=1234)}',dest='port',required=False)
+parser.add_argument('-sql', nargs='?', dest='sql',default='select model avg (add_to_cart_order real) from instacart_order_product_600k where 0.9 <= reordered <= 1.0', help='SQL query (DDL/DML)')
+
 
 args = parser.parse_args()
 
@@ -38,10 +40,11 @@ event = {}
 #sql_string = "create model instacart_order_product_600k (add_to_cart_order real, reordered real) from instacart_order_product_600k.csv method uniform size 1000"
 #sql_string = "select model count (add_to_cart_order real) from instacart_order_product_600k where 0.9 <= reordered <= 1.0"
 #sql_string = "select model sum (add_to_cart_order real) from instacart_order_product_600k where 0.9 <= reordered <= 1.0"
-sql_string = "select model avg (add_to_cart_order real) from instacart_order_product_600k where 0.9 <= reordered <= 1.0"
+# sql_string = "select model avg (add_to_cart_order real) from instacart_order_product_600k where 0.9 <= reordered <= 1.0"
 #sql_string = "show model "
 #sql_string = "drop model instacart_order_product_600k"
 
+sql_string = args.sql
 
 if (" model " in sql_string):
 #    sql_string.replace(" model "," ")
