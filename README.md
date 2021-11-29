@@ -36,3 +36,6 @@ Setup
 ## MLflow API deployging & serving 
 
 1. mlflow models serve -m ./mlruns/0/{runid}/artifacts/model -h 0.0.0.0 -p 8003 --no-conda
+
+## Java client example
+- https://github.com/traindb-project/traindb-ml/blob/main/restapi-client/JavaRestClientTest.java 
