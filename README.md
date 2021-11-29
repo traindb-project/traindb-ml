@@ -29,6 +29,8 @@ Setup
 	- example: runid가 '3b8e1398b973434e9affee956aefaffb'인 경우
 	$ mlflow models serve -m ./mlruns/0/1e619001eca046c7960499c06fe365b0/artifacts/model -h 0.0.0.0 -p 8003 --no-conda
 4. python caller.py 
+  - - SQL 문을 문자열로 전달하려면, '-sql' 옵션 후, SQL 문자열을 포함
+		* python caller.py -sql "select model avg (add_to_cart_order real) from instacart_order_product_600k where 0.9 <= reordered <= 1.0"
 
 
 ## MLflow API deployging & serving 
