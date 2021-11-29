@@ -30,9 +30,11 @@ sql_string = "create model instacart_order_product_600k (add_to_cart_order real,
 				* 여기서, 1e619001eca046c7960499c06fe365b0 --> runid 
 	
 	- 2-2. select model: 소스를 아래와 같이 변경 (아래 3단계. mlflow serving 이후 실행)
+	
 ```
 sql_string = "select model avg (add_to_cart_order real) from instacart_order_product_600k where 0.9 <= reordered <= 1.0"
 ```
+
 3. mlflow models serve -m ~/mlruns/0/{runid}/artifacts/model -h 0.0.0.0 -p 8003 –no-conda
 	- example: runid가 '3b8e1398b973434e9affee956aefaffb'인 경우
 	$ mlflow models serve -m ./mlruns/0/1e619001eca046c7960499c06fe365b0/artifacts/model -h 0.0.0.0 -p 8003 --no-conda
