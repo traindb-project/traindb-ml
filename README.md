@@ -24,9 +24,11 @@ Refer to https://github.com/traindb-project/traindb-ml/blob/main/install-script/
 ```
 sql_string = "create model instacart_order_product_600k (add_to_cart_order real, reordered real) from instacart_order_product_600k.csv method uniform size 1000"
 ```
-		* model 생성 완료되면, mlruns/0/ 디렉토리 아래 mlflow용 모델이 생성됨
+	
+	* model 생성 완료되면, mlruns/0/ 디렉토리 아래 mlflow용 모델이 생성됨
 			* 예:  ./mlruns/0/1e619001eca046c7960499c06fe365b0/
 				* 여기서, 1e619001eca046c7960499c06fe365b0 --> runid 
+	
 	- 2-2. select model: 소스를 아래와 같이 변경 (아래 3단계. mlflow serving 이후 실행)
 ```
 sql_string = "select model avg (add_to_cart_order real) from instacart_order_product_600k where 0.9 <= reordered <= 1.0"
