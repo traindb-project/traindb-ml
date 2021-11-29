@@ -39,7 +39,7 @@ event = {}
 
 #sql_string = "create model instacart_order_product_600k (add_to_cart_order real, reordered real) from instacart_order_product_600k.csv method uniform size 1000"
 #sql_string = "select model count (add_to_cart_order real) from instacart_order_product_600k where 0.9 <= reordered <= 1.0"
-#sql_string = "select model sum (add_to_cart_order real) from instacart_order_product_600k where 0.9 <= reordered <= 1.0"
+sql_string = "select model sum (add_to_cart_order real) from instacart_order_product_600k where 0.9 <= reordered <= 1.0"
 # sql_string = "select model avg (add_to_cart_order real) from instacart_order_product_600k where 0.9 <= reordered <= 1.0"
 #sql_string = "show model "
 #sql_string = "drop model instacart_order_product_600k"
