@@ -39,6 +39,10 @@ Refer to https://github.com/traindb-project/traindb-ml/blob/main/install-script/
 
 1. mlflow models serve -m ./mlruns/0/{runid}/artifacts/model -h 0.0.0.0 -p 8003 --no-conda
 
+* [TBD] MLflow Model Registry를 활용하여 자동 서빙 기능 추가 필요
+	* ML model명과 runid 매핑
+	* 모델 버전 정보 관리/Tracking  	
+
 ## Java client example
 - https://github.com/traindb-project/traindb-ml/blob/main/restapi-client/JavaRestClientTest.java 
 
