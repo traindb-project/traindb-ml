@@ -38,7 +38,7 @@ keywords='Approximate Query Processing AQP',
     },
     zip_safe=False,
     install_requires=[
-        'numpy', 'sqlparse', 'pandas', 'scikit-learn', 'qregpy', 'scipy', 'dill', 'matplotlib', 'torch', 'category_encoders', 'tox', 'sphinx', 'gensim',
+        'numpy', 'sqlparse', 'pandas', 'scikit-learn', 'qregpy', 'scipy', 'dill', 'matplotlib', 'torch', 'category_encoders', 'tox', 'sphinx', 'gensim==3.8.3',
     ],
     test_suite='nose.collector',
     tests_require=['nose'],
