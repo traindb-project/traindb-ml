@@ -51,8 +51,11 @@ def index():
     sql_string = None
     if ("create " in event['sql_string']):
         sql_string = event['sql_string'].replace(" model "," table ")
-    else:
+    elif ("select " in event['sql_string']):
         sql_string = event['sql_string'].replace(" model "," ")
+    else:
+        sql_string = event['sql_string'].replace(" model","")
+
 
     print()
     print()
