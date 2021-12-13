@@ -295,7 +295,7 @@ class RegMdnGroupBy:
         x_points: list,
         y_points: list,
         runtime_config,
-        lr: float = 0.001,
+        lr: float = 0.0001,
         n_workers=0,
         usecols=None,
     ):
@@ -520,6 +520,9 @@ class RegMdnGroupBy:
                     self.model.zero_grad()
                     pi, sigma, mu = self.model(minibatch)
                     loss = mdn_loss(pi, sigma, mu, labels, device)
+                    if not torch.isfinite(loss):
+                        print('WARNING: non-finite (NaN) loss, the divergence has occurred!')
+                        exit(1)
                     loss.backward()
                     optimizer.step()
                 my_lr_scheduler.step()
@@ -1007,6 +1010,9 @@ class RegMdn:
                 self.model.zero_grad()
                 pi, sigma, mu = self.model(minibatch)
                 loss = mdn_loss(pi, sigma, mu, labels, device)
+                if not torch.isfinite(loss):
+                    print(': non-finite (NaN) loss, divergence is occurred!')
+                    exit(1)
                 loss.backward()
                 optimizer.step()
         return self
@@ -1155,6 +1161,9 @@ class RegMdn:
                 self.model.zero_grad()
                 pi, sigma, mu = self.model(minibatch)
                 loss = mdn_loss(pi, sigma, mu, labels, runtime_config["device"])
+                if not torch.isfinite(loss):
+                    print('WARNING: non-finite (NaN) loss, the divergence has occurred!')
+                    exit(1)
                 loss.backward()
                 optimizer.step()
 
@@ -1316,7 +1325,7 @@ class KdeMdn:
         self.config = config
         self.b_normalize_data = b_normalize_data
 
-    def fit(self, zs: list, xs: list, runtime_config, lr=0.001, n_workers=0):
+    def fit(self, zs: list, xs: list, runtime_config, lr=0.0001, n_workers=0):
         #print(">>> ml > mdn.py > KdeMdn : fit()")
 
         """fit the density for the data, to support group by queries.
@@ -1503,6 +1512,9 @@ class KdeMdn:
                     labels.to(device)
                     pi, sigma, mu = self.model(minibatch)
                     loss = mdn_loss(pi, sigma, mu, labels, device)
+                    if not torch.isfinite(loss):
+                        print('WARNING: non-finite (NaN) loss, the divergence has occurred!')
+                        exit(1)
                     loss.backward()
                     optimizer.step()
                 my_lr_scheduler.step()

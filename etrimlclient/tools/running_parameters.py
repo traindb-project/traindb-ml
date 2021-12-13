@@ -42,9 +42,7 @@ class EtrimlConfig:
     def __init__(self):
         self.config = {
             # system-level configuration.
-            # 'warehousedir': '/home/u1796377/Programs/etrimlwarehouse',
             "warehousedir": "etrimlwarehouse",
-            # "warehousedir": "/home/runner/work/ETRIMLClient/ETRIMLClient/",
             "reg_type": "mdn",
             "density_type": "mdn",  # qreg
             "backend_server": "None",
@@ -60,7 +58,7 @@ class EtrimlConfig:
             "table_header": None,
             "accept_filter": False,
             # MDN related parameters
-            "n_epoch": 20,
+            "n_epoch": 14,
             "n_gaussians_reg": 3,
             "n_gaussians_density": 10,
             "b_use_gg": False,
