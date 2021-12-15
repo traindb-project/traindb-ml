@@ -72,6 +72,7 @@ class ETRIMLParser:
             return True
         return False
 
+
     def get_dml_aggregate_function_and_variable(self):
         values = self.parsed.tokens[2].normalized
         print("------------------------------------------------")
