@@ -58,7 +58,7 @@ class EtrimlConfig:
             "table_header": None,
             "accept_filter": False,
             # MDN related parameters
-            "n_epoch": 14,
+            "n_epoch": 100,
             "n_gaussians_reg": 3,
             "n_gaussians_density": 10,
             "b_use_gg": False,
