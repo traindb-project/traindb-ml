@@ -74,7 +74,8 @@ class ETRIMLParser:
 
     def get_dml_aggregate_function_and_variable(self):
         values = self.parsed.tokens[2].normalized
-        print(f'# values: {values}')
+        print("------------------------")
+        print(f'# Function: {values}')        
         if "," in values:
             splits = values.split(",")
             # print(splits)

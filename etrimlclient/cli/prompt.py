@@ -53,19 +53,19 @@ class ETRIMLPrompt(Cmd):
         return True
 
     def do_select(self, inp):
-        print("TrainDB select statement is called.")
+        # print("TrainDB select statement is called.")
         # self.default(inp=inp)
-        print(f'# input query: {inp}')
+        # print(f'# input query: {inp}')
         self.query = 'select '+ inp.split(";")[0]
-        print("Executing query >>> " + self.query + "...")
+        # print("Executing query >>> " + self.query + "...")
         # self.query += inp.split(";")[0]
         self.sqlExecutor.execute(self.query)
         # self.sqlExecutor.execute("select count(pm25 real) from mdl")
 
     def do_create(self, inp):
-        print("TrainDB create statement is called.")
+        # print("TrainDB create statement is called.")
         # self.default(inp=inp)
-        print(f'# input query: {inp}')
+        # print(f'# input query: {inp}')
         self.query = 'create '+ inp
         self.sqlExecutor.execute(self.query)
         # self.sqlExecutor.execute("create table mdl1(pm25 real, PRES real) from pm25.csv  method uniform size 100")
@@ -77,8 +77,8 @@ class ETRIMLPrompt(Cmd):
             self.query = self.query + inp + " "
         else:
             self.query += inp.split(";")[0]
-            if self.config['verbose']:
-                print("Executing query >>> " + self.query + "...")
+            # if self.config['verbose']:
+            #     print("Executing query >>> " + self.query + "...")
 
             # query execution goes here
             # -------------------------------------------->>

@@ -755,7 +755,7 @@ class SqlExecutor:
                 time2 = datetime.now()
                 t = (time2 - time1).seconds
                 if self.runtime_config["b_show_latency"]:
-                    print("time cost: " + str(t) + "s.")
+                    print("Time cost: " + str(t) + " seconds")
                 print("------------------------")
 
                 # rest config
@@ -769,8 +769,8 @@ class SqlExecutor:
                 # DML, provide the prediction using models
                 mdl = self.parser.get_from_name()
 
-                print(f'# model name: {mdl}')
-                print(f'# function return: {self.parser.get_dml_aggregate_function_and_variable()}')
+                # print(f'# model name: {mdl}')
+                # print(f'# function return: {self.parser.get_dml_aggregate_function_and_variable()}')
 
                 gb_to_print, [
                     func,
@@ -786,7 +786,7 @@ class SqlExecutor:
                     and self.parser.get_dml_where_categorical_equal_and_range()[2]
                 ):
 
-                    print("OK")
+                    # print("OK")
                     where_conditions = (
                         self.parser.get_dml_where_categorical_equal_and_range()
                     )
@@ -811,11 +811,11 @@ class SqlExecutor:
                         filter_etriml[next(iter(filter_etriml))][i] for i in [0, 1]
                     ]
 
-                    print("func : ", func)
-                    print("x_lb : ", x_lb)
-                    print("x_ub : ", x_ub)
-                    # print("where_conditions : ", where_conditions)
-                    print("filter_etriml : ", filter_etriml)
+                    # print("func : ", func)
+                    # print("x_lb : ", x_lb)
+                    # print("x_ub : ", x_ub)
+                    # # print("where_conditions : ", where_conditions)
+                    # print("filter_etriml : ", filter_etriml)
 
                     predictions = model.predicts(
                         func,
@@ -838,7 +838,7 @@ class SqlExecutor:
                     )
                     # return predictions
                 else:  # for query without WHERE range selector clause
-                    print("OK")
+                    # print("OK")
                     where_conditions = (
                         self.parser.get_dml_where_categorical_equal_and_range()
                     )
@@ -863,7 +863,8 @@ class SqlExecutor:
 
                 if self.runtime_config["b_print_to_screen"]:
                     # print(predictions.to_csv(sep=',', index=False))  # sep='\t'
-                    print(predictions.to_string(index=False))  # max_rows=5
+                    predictions.iat[0, 0] = 'Result:'
+                    print('# '+ predictions.to_string(index=False, header=False))  # max_rows=5
 
                 if self.runtime_config["result2file"]:
                     predictions.to_csv(self.runtime_config["result2file"],header=False, sep=',', index=False, quoting=csv.QUOTE_NONE, quotechar="",  escapechar=" ")
@@ -876,7 +877,7 @@ class SqlExecutor:
                 if self.runtime_config["b_show_latency"]:
                     end_time = datetime.now()
                     time_cost = (end_time - start_time).total_seconds()
-                    print("Time cost: %.4fs." % time_cost)
+                    print("# Time cost: %.4f seconds" % time_cost)
                 print("------------------------")
                 return "success", "success", predictions, time_cost
 
@@ -958,7 +959,7 @@ class SqlExecutor:
                     return "fail", "Model does not exist!", None, None
 
             elif sql_type == "show":
-                print("OK")
+                # print("OK")
                 t_start = datetime.now()
                 if self.runtime_config["b_print_to_screen"]:
                     for key in self.model_catalog.model_catalog:
@@ -972,7 +973,7 @@ class SqlExecutor:
                 if self.runtime_config["v"]:
                     t_end = datetime.now()
                     time_cost = (t_end - t_start).total_seconds()
-                    print("Time cost: %.4fs." % time_cost)
+                    print("Time cost: %.4f seconds" % time_cost)
                 
                 return "success",  None, val, None
 
@@ -1664,7 +1665,7 @@ class SqlExecutor:
                 t = (time2 - time1).seconds
                 print()
                 if self.runtime_config["b_show_latency"]:
-                    print("time cost: " + str(t) + "s.")
+                    print("Time cost: " + str(t) + " seconds")
                 print()
 
                 print("**********************************************************")
@@ -1687,8 +1688,8 @@ class SqlExecutor:
                 # DML, provide the prediction using models
                 mdl = self.parser.get_from_name()
 
-                print(f'# model name: {mdl}')
-                print(f'# function return: {self.parser.get_dml_aggregate_function_and_variable()}')
+                # print(f'# model name: {mdl}')
+                # print(f'# function return: {self.parser.get_dml_aggregate_function_and_variable()}')
 
                 gb_to_print, [
                     func,
@@ -1822,7 +1823,8 @@ class SqlExecutor:
 
                 if self.runtime_config["b_print_to_screen"]:
                     # print(predictions.to_csv(sep=',', index=False))  # sep='\t'
-                    print(predictions.to_string(index=False))  # max_rows=5
+                    predictions.iat[0, 0] = 'Result:'
+                    print('# '+ predictions.to_string(index=False, header=False))  # max_rows=5
 
                 if self.runtime_config["result2file"]:
                     predictions.to_csv(self.runtime_config["result2file"],header=False, sep=',', index=False, quoting=csv.QUOTE_NONE, quotechar="",  escapechar=" ")
@@ -1836,7 +1838,7 @@ class SqlExecutor:
                     end_time = datetime.now()
                     time_cost = (end_time - start_time).total_seconds()
                     print("----------------------------------------------------------------------")
-                    print("time cost: %.4fs." % time_cost)
+                    print("Time cost: %.4fs." % time_cost)
                     print("======================================================================")
 
                 return "success", "success", predictions, time_cost
@@ -1919,7 +1921,7 @@ class SqlExecutor:
                     return "fail", "Model does not exist!", None, None
 
             elif sql_type == "show":
-                print("OK")
+                # print("OK")
                 t_start = datetime.now()
                 if self.runtime_config["b_print_to_screen"]:
                     for key in self.model_catalog.model_catalog:
