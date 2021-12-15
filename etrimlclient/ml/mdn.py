@@ -29,6 +29,8 @@ from etrimlclient.ml.wordembedding import SkipGram
 
 USE_SKIP_GRAM = True
 
+pd.options.display.float_format = '{:.4f}'.format
+
 # https://www.katnoria.com/mdn/
 # https://github.com/sagelywizard/pytorch-mdn
 """A module for a mixture density network layer
@@ -295,7 +297,7 @@ class RegMdnGroupBy:
         x_points: list,
         y_points: list,
         runtime_config,
-        lr: float = 0.0001,
+        lr: float = 0.00005,
         n_workers=0,
         usecols=None,
     ):
@@ -1325,7 +1327,7 @@ class KdeMdn:
         self.config = config
         self.b_normalize_data = b_normalize_data
 
-    def fit(self, zs: list, xs: list, runtime_config, lr=0.0001, n_workers=0):
+    def fit(self, zs: list, xs: list, runtime_config, lr=0.00005, n_workers=0):
         #print(">>> ml > mdn.py > KdeMdn : fit()")
 
         """fit the density for the data, to support group by queries.
