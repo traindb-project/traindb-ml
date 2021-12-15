@@ -302,7 +302,6 @@ class RegMdnGroupBy:
         usecols=None,
     ):
         #print(">>> ml > mdn.py > RegMdnGroupBy : fit()")
-
         """fit the MDN regression model.
 
         Args:
