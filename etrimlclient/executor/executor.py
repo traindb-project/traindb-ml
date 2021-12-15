@@ -756,7 +756,7 @@ class SqlExecutor:
                 t = (time2 - time1).seconds
                 if self.runtime_config["b_show_latency"]:
                     print("Time cost: " + str(t) + " seconds")
-                print("------------------------")
+                print("------------------------------------------------")
 
                 # rest config
                 self.last_config = None
@@ -878,7 +878,7 @@ class SqlExecutor:
                     end_time = datetime.now()
                     time_cost = (end_time - start_time).total_seconds()
                     print("# Time cost: %.4f seconds" % time_cost)
-                print("------------------------")
+                print("------------------------------------------------")
                 return "success", "success", predictions, time_cost
 
             elif sql_type == "set":  # process SET query
