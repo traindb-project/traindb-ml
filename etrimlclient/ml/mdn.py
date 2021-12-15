@@ -297,7 +297,7 @@ class RegMdnGroupBy:
         x_points: list,
         y_points: list,
         runtime_config,
-        lr: float = 0.00005,
+        lr: float = 0.00001,
         n_workers=0,
         usecols=None,
     ):
@@ -511,10 +511,11 @@ class RegMdnGroupBy:
             my_lr_scheduler = torch.optim.lr_scheduler.ExponentialLR(
                 optimizer=optimizer, gamma=decay_rate
             )
+            loss_epoch = -10000.0
             for epoch in range(n_epoch):
                 if runtime_config["v"]:
                     if epoch % 1 == 0:
-                        print("< Epoch {}".format(epoch))
+                        print(f"< Epoch {epoch}: loss {loss_epoch}")
                 # train the model
                 for minibatch, labels in my_dataloader:
                     minibatch.to(device)
@@ -522,6 +523,7 @@ class RegMdnGroupBy:
                     self.model.zero_grad()
                     pi, sigma, mu = self.model(minibatch)
                     loss = mdn_loss(pi, sigma, mu, labels, device)
+                    loss_epoch = loss
                     if not torch.isfinite(loss):
                         print('WARNING: non-finite (NaN) loss, the divergence has occurred!')
                         exit(1)
@@ -1327,7 +1329,7 @@ class KdeMdn:
         self.config = config
         self.b_normalize_data = b_normalize_data
 
-    def fit(self, zs: list, xs: list, runtime_config, lr=0.00005, n_workers=0):
+    def fit(self, zs: list, xs: list, runtime_config, lr=0.00001, n_workers=0):
         #print(">>> ml > mdn.py > KdeMdn : fit()")
 
         """fit the density for the data, to support group by queries.
@@ -1502,10 +1504,11 @@ class KdeMdn:
             my_lr_scheduler = torch.optim.lr_scheduler.ExponentialLR(
                 optimizer=optimizer, gamma=decayRate
             )
+            loss_epoch = -10000.0
             for epoch in range(num_epoch):
                 if runtime_config["v"]:
                     if epoch % 1 == 0:
-                        print("< Epoch {}".format(epoch))
+                        print(f"< Epoch {epoch}: loss {loss_epoch}")
                 # train the model
                 for minibatch, labels in my_dataloader:
                     self.model.zero_grad()
@@ -1514,6 +1517,7 @@ class KdeMdn:
                     labels.to(device)
                     pi, sigma, mu = self.model(minibatch)
                     loss = mdn_loss(pi, sigma, mu, labels, device)
+                    loss_epoch = loss
                     if not torch.isfinite(loss):
                         print('WARNING: non-finite (NaN) loss, the divergence has occurred!')
                         exit(1)

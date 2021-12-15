@@ -1,3 +1,4 @@
+import json
 
 from copy import deepcopy
 
@@ -71,6 +72,9 @@ class EtrimlConfig:
             "batch_size": 1000,
             "one_model": True,
         }
+
+    # def __init__(self):
+    #     self.config = json.load(open('config.json'))
 
     def set_parameters(self, config: dict):
         """Update the configuration based on a dict.

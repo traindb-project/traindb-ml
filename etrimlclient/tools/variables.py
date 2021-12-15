@@ -61,7 +61,7 @@ class UseCols:
     def __init__(self, usecols):
         # {'y': ['ss_sales_price', 'real', None], 'x_continous': ['ss_sold_date_sk'], 'x_categorical': ['ss_coupon_amt'], 'gb': ['ss_store_sk']}
         self.usecols = usecols
-        print(f'# usecols: {usecols}')
+        # print(f'# usecols: {usecols}')
 
         self.continous_cols = None
         self.categorical_cols = None
