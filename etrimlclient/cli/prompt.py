@@ -69,7 +69,6 @@ class ETRIMLPrompt(Cmd):
         self.query = 'create '+ inp
         self.sqlExecutor.execute(self.query)
         # self.sqlExecutor.execute("create table mdl1(pm25 real, PRES real) from pm25.csv  method uniform size 100")
-
             
     # process the query
     def default(self, inp):
