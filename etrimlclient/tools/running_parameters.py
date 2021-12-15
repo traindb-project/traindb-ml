@@ -73,6 +73,7 @@ class EtrimlConfig:
             "one_model": True,
         }
 
+
     # def __init__(self):
     #     self.config = json.load(open('config.json'))
 
