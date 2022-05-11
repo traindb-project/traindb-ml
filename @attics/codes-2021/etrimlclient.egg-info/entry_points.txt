@@ -1,0 +1,5 @@
+[console_scripts]
+etrimlclient = etrimlclient.main:main
+etrimlmaster = etrimlclient.main:master
+etrimlslave = etrimlclient.main:slave
+

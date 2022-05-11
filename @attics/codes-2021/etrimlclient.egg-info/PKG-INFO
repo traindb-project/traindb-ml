@@ -1,0 +1,14 @@
+Metadata-Version: 2.1
+Name: etrimlclient
+Version: 1.0
+Summary: Model-based Approximate Query Processing (AQP) engine.
+Home-page: https://github.com/traindb-project/etrimlclient
+Author: ETRI
+Author-email: sungsoo@etri.re.kr
+License: UNKNOWN
+Keywords: Approximate Query Processing AQP
+Platform: UNKNOWN
+License-File: LICENSE
+
+ETRIMLClient
+
