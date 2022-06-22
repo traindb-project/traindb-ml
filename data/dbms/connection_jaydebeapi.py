@@ -1,3 +1,5 @@
+# JDBC connection test
+
 import jaydebeapi
 
 conn = jaydebeapi.connect("org.hsqldb.jdbcDriver",
