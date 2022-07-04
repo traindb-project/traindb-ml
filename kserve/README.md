@@ -41,14 +41,17 @@ Kubernetes Version | Recommended Istio Version | Recommended Knative Version
 ### Major Components Installation
 
 1. [Install Istio](https://kserve.github.io/website/master/admin/serverless/#1-install-istio)
+
 Please refer to the [Istio install guide](https://knative.dev/docs/admin/install/installing-istio).
 
 2. [Install Knative Serving](https://kserve.github.io/website/master/admin/serverless/#2-install-knative-serving)
+
 Please refer to [Knative Serving install guide](https://knative.dev/docs/admin/install/serving/install-serving-with-yaml/).
 
 **Note**  If you are looking to use PodSpec fields such as nodeSelector, affinity or tolerations which are now supported in the v1beta1 API spec, you need to turn on the corresponding [feature flags](https://knative.dev/docs/admin/serving/feature-flags) in your Knative configuration.
 
 3. [Install Cert Manager](https://kserve.github.io/website/master/admin/serverless/#3-install-cert-manager)
+
 The minimally required Cert Manager version is 1.3.0 and you can refer to [Cert Manager](https://cert-manager.io/docs/installation/).
 
 **Note** Cert manager is required to provision webhook certs for production grade installation, alternatively you can run self signed certs generation script.
@@ -67,6 +70,7 @@ kubectl apply -f https://github.com/kserve/kserve/releases/download/v0.8.0/kserv
 **Note**  ClusterServingRuntimes are required to create InferenceService for built-in model serving runtimes with KServe v0.8.0 or higher.
 
 ### Practice : Components Installation
+
 I performed the KServe installation as the following versions in the recommended version matrix.
 
 ```sh
