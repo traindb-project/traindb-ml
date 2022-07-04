@@ -23,7 +23,6 @@ We assume that you have already installed Kubeflow by using the following guide.
 * Installation Guide: [Quick start guide to Kubeflow](https://charmed-kubeflow.io/docs/quickstart)
 
 
-
 ## 1. KServe Installation
 
 KServe **Serverless installation** enables autoscaling based on request volume and supports scale down to and from zero. It also supports revision management and canary rollout based on revisions.
@@ -38,6 +37,7 @@ Kubernetes Version | Recommended Istio Version | Recommended Knative Version
 1.21 | 1.10, 1.11 | 0.25, 0.26, 1.0
 1.22 | 1.11, 1.12 | 0.25, 0.26, 1.0
 
+### Major Components Installation
 
 1. [Install Istio](https://kserve.github.io/website/master/admin/serverless/#1-install-istio)
 Please refer to the [Istio install guide](https://knative.dev/docs/admin/install/installing-istio).
@@ -64,3 +64,5 @@ kubectl apply -f https://github.com/kserve/kserve/releases/download/v0.8.0/kserv
 kubectl apply -f https://github.com/kserve/kserve/releases/download/v0.8.0/kserve-runtimes.yaml
 ```
 **Note**  ClusterServingRuntimes are required to create InferenceService for built-in model serving runtimes with KServe v0.8.0 or higher.
+
+### Practice : Components Installation
