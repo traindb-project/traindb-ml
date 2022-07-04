@@ -1,5 +1,8 @@
 # KServe setup and testing (starting from 5 July)
 
+- Sung-Soo Kim
+- Updated: 5 July, 2022.
+
 ## Prerequests
 
 1. **Microk8s with Kubeflow**: you have an installed version of Kubeflow. 
