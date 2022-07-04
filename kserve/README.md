@@ -9,7 +9,7 @@ This page describes KServe installation and testing procedure for Kubeflow on Mi
 KServe is the one of the fundamental building blocks in TrainDB-ML for deploying and serving machine learning models related to approximate query processing.
 
 
-## Prerequests
+## Requirements
 
 1. **Microk8s with Kubeflow**: you have an installed version of Kubeflow. 
   * Installation Guide: [Quick start guide to Kubeflow](https://charmed-kubeflow.io/docs/quickstart)
