@@ -66,6 +66,14 @@ kubectl apply -f https://github.com/kserve/kserve/releases/download/v0.8.0/kserv
 **Note**  ClusterServingRuntimes are required to create InferenceService for built-in model serving runtimes with KServe v0.8.0 or higher.
 
 ### Practice : Components Installation
+I performed the KServe installation as the following versions in the recommended version matrix.
+
+```sh
+export ISTIO_VERSION=1.11.0
+export KNATIVE_VERSION=knative-v1.0.0
+export KSERVE_VERSION=v0.8.0
+export CERT_MANAGER_VERSION=v1.3.0
+```
 
 
 ## 2. KServe InferenceService Testing
