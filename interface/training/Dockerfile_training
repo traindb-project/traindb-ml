@@ -1,0 +1,19 @@
+FROM pytorch/pytorch:1.0-cuda10.0-cudnn7-runtime
+
+RUN apt update
+RUN apt install software-properties-common -y
+RUN add-apt-repository ppa:deadsnakes/ppa -y
+RUN apt install python3.7 --version -y
+RUN python -m pip install --upgrade pip
+
+RUN pip install tensorboardX==1.6.0
+RUN mkdir -p /opt/mnist
+RUN mkdir -p /opt/mnist/models
+
+WORKDIR /opt/mnist/src
+ADD mnist_training.py /opt/mnist/src/mnist_training.py
+
+RUN  chgrp -R 0 /opt/mnist \
+  && chmod -R g+rwX /opt/mnist
+
+ENTRYPOINT ["python3", "/opt/mnist/src/mnist_training.py"]

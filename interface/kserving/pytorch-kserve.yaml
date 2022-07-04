@@ -1,0 +1,8 @@
+apiVersion: "serving.kserve.io/v1beta1"
+kind: InferenceService
+metadata:
+  name: pytorch-kserve
+spec:
+  predictor:
+    pytorch:
+      storageUri: "pvc://pvc-traindb-models-claim/mnist_cnn.pt"

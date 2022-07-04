@@ -1,0 +1,1 @@
+smk port-forward svc/traindb-fserving-mnist-service 12345:8282 &

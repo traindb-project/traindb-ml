@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: traindb-fserving-mnist-pod
+  labels:
+    run: traindb-fserving-mnist-pod
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      run: traindb-fserving-mnist-pod
+  template:
+    metadata:
+      labels:
+        run: traindb-fserving-mnist-pod
+    spec:
+      volumes:
+        - name: task-pv-storage
+          persistentVolumeClaim:
+            claimName: traindb-models-claim
+      containers:
+        - name: traindb-fserving-mnist-container
+          image: joleedocker/pytorchjob-fserving-mnist:1.0
+          ports:
+            - containerPort: 80
+          volumeMounts:
+            - mountPath: "/opt/mnist/models"
+              name: task-pv-storage
+              #          command:
+              #- "python3"
+              #- "/opt/mnist/src/mnist_kserving.py"

@@ -1,0 +1,47 @@
+apiVersion: "kubeflow.org/v1"
+kind: PyTorchJob
+metadata:
+  name: traindb-training-mnist
+spec:
+  pytorchReplicaSpecs:
+    Master:
+      replicas: 1
+      restartPolicy: OnFailure
+      template:
+        spec:
+          volumes:
+             - name: task-pv-storage-master
+               persistentVolumeClaim:
+                 claimName: traindb-models-claim
+
+          containers:
+            - name: pytorch
+              image: joleedocker/pytorchjob-training-mnist:1.0
+              imagePullPolicy: Always
+              volumeMounts:
+                - mountPath: "/opt/mnist/models"
+                  name: task-pv-storage-master
+              command:
+                - "python3"
+                - "/opt/mnist/src/mnist_training.py"
+                - "--epochs=1"
+    Worker:
+      replicas: 1
+      restartPolicy: OnFailure
+      template:
+        spec:
+          volumes:
+             - name: task-pv-storage-worker
+               persistentVolumeClaim:
+                 claimName: traindb-models-claim
+          containers:
+            - name: pytorch
+              image: joleedocker/pytorchjob-training-mnist:1.0
+              imagePullPolicy: Always
+              volumeMounts:
+                - mountPath: "/opt/mnist/models"
+                  name: task-pv-storage-worker
+              command:
+                - "python3"
+                - "/opt/mnist/src/mnist_training.py"
+                - "--epochs=1"
