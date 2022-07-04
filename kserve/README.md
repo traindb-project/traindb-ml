@@ -35,7 +35,7 @@ Kubernetes 1.20 is the minimally required version and please check the following
 Kubernetes Version | Recommended Istio Version | Recommended Knative Version
 -- | -- | --
 1.20 | 1.9, 1.10, 1.11 | 0.25, 0.26, 1.0
-1.21 | 1.10, 1.11 | 0.25, 0.26, 1.0
+**1.21** | 1.10, **1.11** | 0.25, 0.26, **1.0**
 1.22 | 1.11, 1.12 | 0.25, 0.26, 1.0
 
 ### Major Components Installation
