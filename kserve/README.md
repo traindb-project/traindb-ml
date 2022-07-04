@@ -66,3 +66,9 @@ kubectl apply -f https://github.com/kserve/kserve/releases/download/v0.8.0/kserv
 **Note**  ClusterServingRuntimes are required to create InferenceService for built-in model serving runtimes with KServe v0.8.0 or higher.
 
 ### Practice : Components Installation
+
+
+## 2. KServe InferenceService Testing
+
+
+## Key Concepts of Model Serving and Integration for TrainDB-ML
