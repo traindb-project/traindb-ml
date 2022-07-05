@@ -30,6 +30,8 @@ KServe **Serverless installation** enables autoscaling based on request volume a
 
 Kubernetes 1.20 is the minimally required version and please check the following recommended Knative, Istio versions for the corresponding Kubernetes version.
 
+KServe exploits the major components, as shown in the following diagram.
+
 ![Kserve architecture diagram](https://cdn.thenewstack.io/media/2022/02/d0a028b8-kserve-1024x515.jpg)
 
 ### Recommended Version Matrix
@@ -81,7 +83,13 @@ export KNATIVE_VERSION=knative-v1.0.0
 export KSERVE_VERSION=v0.8.0
 export CERT_MANAGER_VERSION=v1.3.0
 ```
+1. Install Istio
 
+To install Istio without *sidecar injection*:
+
+```sh
+istioctl install -y
+```
 
 ## 2. KServe InferenceService Testing
 
