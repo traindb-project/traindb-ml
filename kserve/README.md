@@ -25,6 +25,38 @@ KServe is the one of the fundamental building blocks in TrainDB-ML for deploying
 We assume that you have already installed Kubeflow by using the following guide.
 * Installation Guide: [Quick start guide to Kubeflow](https://charmed-kubeflow.io/docs/quickstart)
 
+You can check the installation status using the following commands ('microk8s inspect').
+
+```sh
+(base) ╭─sungsoo@z840 ~
+╰─$ microk8s inspect
+[sudo] password for sungsoo:
+Inspecting Certificates
+Inspecting services
+  Service snap.microk8s.daemon-cluster-agent is running
+  Service snap.microk8s.daemon-containerd is running
+  Service snap.microk8s.daemon-apiserver-kicker is running
+  Service snap.microk8s.daemon-kubelite is running
+  Copy service arguments to the final report tarball
+Inspecting AppArmor configuration
+Gathering system information
+  Copy processes list to the final report tarball
+  Copy snap list to the final report tarball
+  Copy VM name (or none) to the final report tarball
+  Copy disk usage information to the final report tarball
+  Copy memory usage information to the final report tarball
+  Copy server uptime to the final report tarball
+  Copy current linux distribution to the final report tarball
+  Copy openSSL information to the final report tarball
+  Copy network configuration to the final report tarball
+Inspecting kubernetes cluster
+  Inspect kubernetes cluster
+Inspecting juju
+  Inspect Juju
+Inspecting kubeflow
+  Inspect Kubeflow
+```
+
 
 ## 1. KServe Installation
 
