@@ -6,6 +6,8 @@
 
 This page describes KServe installation and testing procedure for Kubeflow on Microk8s.
 
+If you're acquainted with Kubeflow, you're probably familiar with KFServing, the platform's model server, and inference engine. The KFServing project was renamed KServe in September 2021.
+
 KServe is the one of the fundamental building blocks in TrainDB-ML for deploying and serving machine learning models related to approximate query processing.
 
 
