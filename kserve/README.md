@@ -13,7 +13,7 @@ KServe is the one of the fundamental building blocks in TrainDB-ML for deploying
 
 1. **Microk8s with Kubeflow**: you have an installed version of Kubeflow. 
   * Installation Guide: [Quick start guide to Kubeflow](https://charmed-kubeflow.io/docs/quickstart)
-2. **Fundamental Concepts** of Kubeflow, Istio, KNative, KServe(or formerly KFServing)
+2. **Fundamental Concepts** of Kubeflow, Istio, KNative, and KServe(or formerly KFServing)
   * You need to understand the following core concepts related to model serving in Kubeflow.
   * Since we can't delve deeply into every topic, we would like to provide you a short list of our favorite primers on Kubeflow especially serving topics.
       * [Kubeflow for Machine Learning](https://www.amazon.com/Kubeflow-Machine-Learning-Lab-Production/dp/1492050121) - Chapter 8
