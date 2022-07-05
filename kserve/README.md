@@ -125,6 +125,10 @@ To install Istio without *sidecar injection*:
 istioctl install -y
 ```
 
+2. Install Knative Serving
+
+Knative is a serverless solution built on Kubernetes that is open source and managed by Google. Therefore, it is not tied to any cloud service and may be deployed locally if necessary.
+
 ## 2. KServe InferenceService Testing
 
 
