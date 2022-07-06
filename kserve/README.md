@@ -337,6 +337,19 @@ or @microk8s with kubeflow
 ```sh
 export INGRESS_HOST=$(kubectl -n kubeflow get service istio-ingressgateway -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
 export INGRESS_PORT=$(kubectl -n kubeflow get service istio-ingressgateway -o jsonpath='{.spec.ports[?(@.name=="http2")].port}')
+
+(base) ╭─sungsoo@z840 ~/github/kubeflow-examples/kserve ‹main●›
+╰─$ export INGRESS_HOST=$(kubectl -n istio-system get service istio-ingressgateway -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
+
+(base) ╭─sungsoo@z840 ~/github/kubeflow-examples/kserve ‹main●›
+╰─$ export INGRESS_PORT=$(kubectl -n kubeflow get service istio-ingressgateway -o jsonpath='{.spec.ports[?(@.name=="http2")].port}')
+
+(base) ╭─sungsoo@z840 ~/github/kubeflow-examples/kserve ‹main●›
+╰─$ echo $INGRESS_HOST
+10.64.140.44
+(base) ╭─sungsoo@z840 ~/github/kubeflow-examples/kserve ‹main●›
+╰─$ echo $INGRESS_PORT
+80
 ```
 
 
