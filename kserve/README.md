@@ -21,6 +21,8 @@ KServe is the one of the fundamental building blocks in TrainDB-ML for deploying
       * [Kubeflow for Machine Learning](https://www.amazon.com/Kubeflow-Machine-Learning-Lab-Production/dp/1492050121) - Chapter 8
       * [Kubeflow Operations Guide](https://www.oreilly.com/library/view/kubeflow-operations-guide/9781492053262/) - Chapter 8 
 
+이미 Kubeflow와 KServe가 설치 되어 있다면, 아래 "*2. KServe InferenceService Testing*" 부터 참고하라.
+
 ## 0. Installing Kubeflow
 We assume that you have already installed Kubeflow by using the following guide.
 * Installation Guide: [Quick start guide to Kubeflow](https://charmed-kubeflow.io/docs/quickstart)
