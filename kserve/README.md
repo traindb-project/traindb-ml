@@ -313,6 +313,8 @@ export INGRESS_HOST=localhost
 export INGRESS_PORT=8080
 ```
 
+(내 생각) 개발 환경에서는 localhost로  Port forward를 통해 사용하면 되겠다. 하지만, production 환경에서는 DNS 설정 등이 필요할 것으로 생각한다.
+
 **3. Inference call**
 
 호출 테스트를 위해, iris-inference-call.sh 파일을 실행한다.
