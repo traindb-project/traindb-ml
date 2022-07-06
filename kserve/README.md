@@ -367,7 +367,7 @@ export INGRESS_PORT=$(kubectl -n istio-system get service istio-ingressgateway -
 ```
 
 #### Port Forward
-Alternatively you can do Port Forward for testing purpose
+Alternatively you can do Port Forward for **testing purpose**
 
 ```sh
 INGRESS_GATEWAY_SERVICE=$(kubectl get svc --namespace istio-system --selector="app=istio-ingressgateway" --output jsonpath='{.items[0].metadata.name}')
