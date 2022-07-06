@@ -297,9 +297,10 @@ kserve-test                     sklearn-iris-predictor-default-00001-deployment-
 **2. Check InferenceService status.**
 
 ```sh
-kubectl get inferenceservices sklearn-iris -n kserve-test
-NAME           URL                                                 READY   PREV   LATEST   PREVROLLEDOUTREVISION   LATESTREADYREVISION                    AGE
-sklearn-iris   http://sklearn-iris.kserve-test.example.com         True           100                              sklearn-iris-predictor-default-47q2g   7d23h
+(base) ╭─sungsoo@z840 ~
+╰─$ kubectl get inferenceservices sklearn-iris -n kserve-test
+NAME           URL                                           READY   PREV   LATEST   PREVROLLEDOUTREVISION   LATESTREADYREVISION                    AGE
+sklearn-iris   http://sklearn-iris.kserve-test.example.com   True           100                              sklearn-iris-predictor-default-00001   62m
 ```
 
 If your DNS contains example.com please consult your admin for configuring DNS or using [custom domain](https://knative.dev/docs/serving/using-a-custom-domain).
