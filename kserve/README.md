@@ -308,7 +308,7 @@ export INGRESS_HOST=localhost
 export INGRESS_PORT=8080
 ```
 
-**3. Inference call **
+**3. Inference call**
 
 호출 테스트를 위해, iris-inference-call.sh 파일을 실행한다.
 
