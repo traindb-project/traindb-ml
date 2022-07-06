@@ -344,6 +344,3 @@ export INGRESS_PORT=8080
 
 * KServe Python SDK를 이용한 Serving 모듈 테스트
 * PyTorch 모델 적용
-
-
-## Key Concepts of Model Serving and Integration for TrainDB-ML
