@@ -260,6 +260,7 @@ Since your model is being deployed as an InferenceService, not a raw Kubernetes 
 
 **1. Create test InferenceService**
 
+
 ```YAML
 apiVersion: "serving.kserve.io/v1beta1"
 kind: "InferenceService"
@@ -270,12 +271,13 @@ spec:
     sklearn:
       storageUri: "gs://kfserving-samples/models/sklearn/iris"
 ```
+위외 같은 iris 모델 serving 테스트를 위한 iris-sklearn.yaml을 이용하여 POD를 설치한다.
 
-Once you've created your YAML file (named something like "sklearn.yaml"):
+Once you've created your YAML file (named something like "iris-sklearn.yaml"):
 
 ```sh
 kubectl create namespace kserve-test
-kubectl apply -f sklearn.yaml -n kserve-test
+kubectl apply -f iris-sklearn.yaml -n kserve-test
 ```
 
 You can verify the deployment of this inference service as follows.
@@ -294,80 +296,9 @@ kserve-test                     sklearn-iris-predictor-default-00001-deployment-
 kserve-test                     sklearn-iris-predictor-default-00001-deployment-7958c8bfddv68k9   2/2     Running           0          98s
 ```
 
-**2. Check InferenceService status.**
+**2. Port Forward**
 
-```sh
-(base) ╭─sungsoo@z840 ~
-╰─$ kubectl get inferenceservices sklearn-iris -n kserve-test
-NAME           URL                                           READY   PREV   LATEST   PREVROLLEDOUTREVISION   LATESTREADYREVISION                    AGE
-sklearn-iris   http://sklearn-iris.kserve-test.example.com   True           100                              sklearn-iris-predictor-default-00001   62m
-```
-
-If your DNS contains example.com please consult your admin for configuring DNS or using [custom domain](https://knative.dev/docs/serving/using-a-custom-domain).
-
-**3. Determine the ingress IP and ports**
-
-Execute the following command to determine if your kubernetes cluster is running in an environment that supports external load balancers
-
-```sh
-(base) ╭─sungsoo@z840 ~
-╰─$ kubectl get svc istio-ingressgateway -n istio-system
-NAME                   TYPE           CLUSTER-IP       EXTERNAL-IP    PORT(S)                                      AGE
-istio-ingressgateway   LoadBalancer   10.152.183.253   10.64.140.44   15021:30083/TCP,80:30621/TCP,443:31180/TCP   97m
-```
-or @microk8s with kubeflow
-
-```sh
-(base) ╭─sungsoo@z840 ~
-╰─$ kubectl get svc istio-ingressgateway -n kubeflow
-NAME                   TYPE           CLUSTER-IP       EXTERNAL-IP    PORT(S)                                                                                                                                                                   AGE
-istio-ingressgateway   LoadBalancer   10.152.183.189   10.64.140.43   15020:30524/TCP,80:32346/TCP,443:30625/TCP,15029:32677/TCP,15030:31221/TCP,15031:30365/TCP,15032:32761/TCP,15443:30695/TCP,15011:32155/TCP,8060:30589/TCP,853:31558/TCP   23h
-```
-
-#### Load Balancer
-If the EXTERNAL-IP value is set, your environment has an external load balancer that you can use for the ingress gateway.
-
-```sh
-export INGRESS_HOST=$(kubectl -n istio-system get service istio-ingressgateway -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
-export INGRESS_PORT=$(kubectl -n istio-system get service istio-ingressgateway -o jsonpath='{.spec.ports[?(@.name=="http2")].port}')
-```
-
-or @microk8s with kubeflow
-
-```sh
-export INGRESS_HOST=$(kubectl -n kubeflow get service istio-ingressgateway -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
-export INGRESS_PORT=$(kubectl -n kubeflow get service istio-ingressgateway -o jsonpath='{.spec.ports[?(@.name=="http2")].port}')
-
-(base) ╭─sungsoo@z840 ~/github/kubeflow-examples/kserve ‹main●›
-╰─$ export INGRESS_HOST=$(kubectl -n istio-system get service istio-ingressgateway -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
-
-(base) ╭─sungsoo@z840 ~/github/kubeflow-examples/kserve ‹main●›
-╰─$ export INGRESS_PORT=$(kubectl -n kubeflow get service istio-ingressgateway -o jsonpath='{.spec.ports[?(@.name=="http2")].port}')
-
-(base) ╭─sungsoo@z840 ~/github/kubeflow-examples/kserve ‹main●›
-╰─$ echo $INGRESS_HOST
-10.64.140.44
-(base) ╭─sungsoo@z840 ~/github/kubeflow-examples/kserve ‹main●›
-╰─$ echo $INGRESS_PORT
-80
-```
-
-
-#### Node Port
-If the EXTERNAL-IP value is none (or perpetually pending), your environment does not provide an external load balancer for the ingress gateway. In this case, you can access the gateway using the service’s node port.
-
-```sh
-# GKE
-export INGRESS_HOST=worker-node-address
-# Minikube
-export INGRESS_HOST=$(minikube ip)
-# Other environment(On Prem)
-export INGRESS_HOST=$(kubectl get po -l istio=ingressgateway -n istio-system -o jsonpath='{.items[0].status.hostIP}')
-export INGRESS_PORT=$(kubectl -n istio-system get service istio-ingressgateway -o jsonpath='{.spec.ports[?(@.name=="http2")].nodePort}')
-```
-
-#### Port Forward
-Alternatively you can do Port Forward for **testing purpose**
+You can do Port Forward for **testing purpose**
 
 ```sh
 INGRESS_GATEWAY_SERVICE=$(kubectl get svc --namespace istio-system --selector="app=istio-ingressgateway" --output jsonpath='{.items[0].metadata.name}')
@@ -376,5 +307,41 @@ kubectl port-forward --namespace istio-system svc/${INGRESS_GATEWAY_SERVICE} 808
 export INGRESS_HOST=localhost
 export INGRESS_PORT=8080
 ```
+
+**3. Inference call **
+
+호출 테스트를 위해, iris-inference-call.sh 파일을 실행한다.
+
+```sh
+(base) ╭─sungsoo@z840 ~/github/kubeflow-examples/kserve ‹main●›
+╰─$ iris-inference-call.sh
+*   Trying 127.0.0.1:8080...
+* Connected to localhost (127.0.0.1) port 8080 (#0)
+> POST /v1/models/sklearn-iris:predict HTTP/1.1
+> Host: sklearn-iris.kserve-test.example.com
+> User-Agent: curl/7.78.0
+> Accept: */*
+> Content-Length: 65
+> Content-Type: application/x-www-form-urlencoded
+>
+* Mark bundle as not supporting multiuse
+< HTTP/1.1 200 OK
+< content-length: 23
+< content-type: application/json; charset=UTF-8
+< date: Wed, 06 Jul 2022 23:36:37 GMT
+< server: istio-envoy
+< x-envoy-upstream-service-time: 7
+<
+* Connection #0 to host localhost left intact
+{"predictions": [1, 1]}
+```
+
+위와 같이, 모델 추론에 대한 리턴 '{"predictions": [1, 1]}'이 정상적으로 반환되는 것을 확인했다.
+
+다음 진행해야 할 내용은 아래와 같다.
+
+* KServe Python SDK를 이용한 Serving 모듈 테스트
+* PyTorch 모델 적용
+
 
 ## Key Concepts of Model Serving and Integration for TrainDB-ML
