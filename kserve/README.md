@@ -117,7 +117,7 @@ export KNATIVE_VERSION=knative-v1.0.0
 export KSERVE_VERSION=v0.8.0
 export CERT_MANAGER_VERSION=v1.3.0
 ```
-1. Install Istio
+#### 1. Install Istio
 
 To install Istio without *sidecar injection*:
 
@@ -125,11 +125,241 @@ To install Istio without *sidecar injection*:
 istioctl install -y
 ```
 
-2. Install Knative Serving
+```sh
+(base) ╭─sungsoo@z840 ~/kubeflow/istio-1.11.0
+╰─$ bin/istoctl install
+zsh: no such file or directory: bin/istoctl
+(base) ╭─sungsoo@z840 ~/kubeflow/istio-1.11.0
+╰─$ bin/istioctl install                                                                                                                                        127 ↵
+This will install the Istio 1.11.0 default profile with ["Istio core" "Istiod" "Ingress gateways"] components into the cluster. Proceed? (y/N) y
+✔ Istio core installed
+✔ Istiod installed
+✔ Ingress gateways installed
+✔ Installation complete
+Thank you for installing Istio 1.11.  Please take a few minutes to tell us about your install/upgrade experience!  https://forms.gle/kWULBRjUv7hHci7T6
+```
+istio 관련 pod가 제대로 실행되었는지 확인한다.
+
+```sh
+(base) ╭─sungsoo@z840 ~
+╰─$ k get pods -A -w
+istio-system                    istiod-75d5bf4676-tvztm                            1/1     Running   0          28s
+istio-system                    istio-ingressgateway-85fbdd86f7-pl2lc              1/1     Running   0          23
+```
+
+#### 2. Install Knative Serving
 
 Knative is a serverless solution built on Kubernetes that is open source and managed by Google. Therefore, it is not tied to any cloud service and may be deployed locally if necessary.
 
+####  Install Knative
+
+이제 Knative를 설치해 보자.
+
+아래 명령어을 통해, Knative 버전 1.0을 설치한다.
+
+```sh
+kubectl apply --filename https://github.com/knative/serving/releases/download/knative-v1.0.0/serving-crds.yaml
+kubectl apply --filename https://github.com/knative/serving/releases/download/knative-v1.0.0/serving-core.yaml
+kubectl apply --filename https://github.com/knative/net-istio/releases/download/knative-v1.0.0/release.yaml
+```
+
+#### 3. Install Cert Manager
+
+```sh
+kubectl apply --validate=false -f https://github.com/jetstack/cert-manager/releases/download/v1.3.0/cert-manager.yaml
+kubectl wait --for=condition=available --timeout=600s deployment/cert-manager-webhook -n cert-manager
+```
+
+#### 4. Install KServe
+
+```sh
+kubectl apply -f https://github.com/kserve/kserve/releases/download/v0.8.0/kserve.yaml
+kubectl wait --for=condition=ready pod -l control-plane=kserve-controller-manager -n kserve --timeout=300s
+```
+
+#### 5. Install KServe built-in servingruntimes
+
+```sh
+kubectl apply -f https://github.com/kserve/kserve/releases/download/v0.8.0/kserve-runtimes.yaml
+```
+
+#### 6. 설치 상태 확인
+
+앞의 모든 내용을 실행 후, 설치가 제대로 되어있는지 POD 상태를 확인한다.
+
+```sh
+(base) ╭─sungsoo@z840 ~
+╰─$ k get pods -A -w                  
+NAMESPACE                       NAME                                               READY   STATUS    RESTARTS   AGE
+kube-system                     calico-kube-controllers-f7868dd95-5qvc5            1/1     Running   0          22h
+kube-system                     coredns-7f9c69c78c-sjtf5                           1/1     Running   0          22h
+kube-system                     calico-node-d72j4                                  1/1     Running   0          22h
+
+... 중간 생략
+
+traindb-ml                      ml-pipeline-visualizationserver-569ccd5d86-jcmvn   1/1     Running   0          20h
+traindb-ml                      ml-pipeline-ui-artifact-77dfb58d8b-lf8rt           1/1     Running   0          20h
+istio-system                    istiod-75d5bf4676-tvztm                            1/1     Running   0          10m
+istio-system                    istio-ingressgateway-85fbdd86f7-pl2lc              1/1     Running   0          9m55s
+knative-serving                 autoscaler-6c8884d6ff-k9rkf                        1/1     Running   0          5m7s
+knative-serving                 activator-68b7698d74-cn24l                         1/1     Running   0          5m8s
+knative-serving                 controller-76cf997d95-95xmz                        1/1     Running   0          5m7s
+knative-serving                 domain-mapping-57fdbf97b-j6sqf                     1/1     Running   0          5m6s
+knative-serving                 domainmapping-webhook-66c5f7d596-h9qzf             1/1     Running   0          5m6s
+knative-serving                 webhook-7df8fd847b-2wskb                           1/1     Running   0          5m5s
+knative-serving                 net-istio-controller-544874485d-8n5xz              1/1     Running   0          2m58s
+knative-serving                 net-istio-webhook-695d588d65-wq7mp                 1/1     Running   0          2m58s
+cert-manager                    cert-manager-cainjector-655d695d74-czptn           1/1     Running   0          2m19s
+cert-manager                    cert-manager-76b7c557d5-b8hl2                      1/1     Running   0          2m18s
+cert-manager                    cert-manager-webhook-7955b9bb97-7pv7v              1/1     Running   0          2m18s
+kserve                          kserve-controller-manager-0                        2/2     Running   0          72s
+```
+설치했던 모든 POD가 정상적으로 시작 (READY) 되었으면 성공이다!
+
+Kserve가 어떻게 실행되었는지 세부내용을 있는지 확인해 보자.
+
+```sh
+(base) ╭─sungsoo@z840 ~
+╰─$ k describe pod kserve-controller-manager-0 -n kserve
+Name:         kserve-controller-manager-0
+Namespace:    kserve
+Priority:     0
+Node:         z840/129.254.187.182
+Start Time:   Thu, 07 Jul 2022 06:39:14 +0900
+Labels:       control-plane=kserve-controller-manager
+
+... 중간 생략
+
+Events:
+  Type     Reason       Age                    From               Message
+  ----     ------       ----                   ----               -------
+  Normal   Scheduled    4m36s                  default-scheduler  Successfully assigned kserve/kserve-controller-manager-0 to z840
+  Warning  FailedMount  4m36s (x2 over 4m36s)  kubelet            MountVolume.SetUp failed for volume "cert" : secret "kserve-webhook-server-cert" not found
+  Normal   Pulling      4m33s                  kubelet            Pulling image "kserve/kserve-controller:v0.8.0"
+  Normal   Pulled       4m26s                  kubelet            Successfully pulled image "kserve/kserve-controller:v0.8.0" in 7.872368634s
+  Normal   Created      4m25s                  kubelet            Created container manager
+  Normal   Started      4m25s                  kubelet            Started container manager
+  Normal   Pulling      4m25s                  kubelet            Pulling image "gcr.io/kubebuilder/kube-rbac-proxy:v0.8.0"
+  Normal   Pulled       4m19s                  kubelet            Successfully pulled image "gcr.io/kubebuilder/kube-rbac-proxy:v0.8.0" in 5.875500128s
+  Normal   Created      4m19s                  kubelet            Created container kube-rbac-proxy
+  Normal   Started      4m19s                  kubelet            Started container kube-rbac-proxy
+```
+
+
 ## 2. KServe InferenceService Testing
 
+* Article Source: [First InferenceService](https://kserve.github.io/website/get_started/first_isvc/)
+
+### Run your first InferenceService
+
+In this tutorial, you will deploy a ScikitLearn InferenceService.
+
+This inference service loads a simple iris ML model, send a list of attributes and print the prediction for the class of iris plant."
+
+Since your model is being deployed as an InferenceService, not a raw Kubernetes Service, you just need to provide the trained model and it gets some super powers out of the box 🚀.
+
+**1. Create test InferenceService**
+
+```YAML
+apiVersion: "serving.kserve.io/v1beta1"
+kind: "InferenceService"
+metadata:
+  name: "sklearn-iris"
+spec:
+  predictor:
+    sklearn:
+      storageUri: "gs://kfserving-samples/models/sklearn/iris"
+```
+
+Once you've created your YAML file (named something like "sklearn.yaml"):
+
+```sh
+kubectl create namespace kserve-test
+kubectl apply -f sklearn.yaml -n kserve-test
+```
+
+You can verify the deployment of this inference service as follows.
+```
+(base) ╭─sungsoo@z840 ~
+╰─$ k get pods -A -w
+NAMESPACE                       NAME                                               READY   STATUS    RESTARTS   AGE
+...중간 생략
+kserve-test                     sklearn-iris-predictor-default-00001-deployment-7958c8bfddv68k9   0/2     Pending   0          2s
+kserve-test                     sklearn-iris-predictor-default-00001-deployment-7958c8bfddv68k9   0/2     Pending   0          3s
+kserve-test                     sklearn-iris-predictor-default-00001-deployment-7958c8bfddv68k9   0/2     Init:0/1   0          3s
+kserve-test                     sklearn-iris-predictor-default-00001-deployment-7958c8bfddv68k9   0/2     Init:0/1   0          8s
+kserve-test                     sklearn-iris-predictor-default-00001-deployment-7958c8bfddv68k9   0/2     Init:0/1   0          41s
+kserve-test                     sklearn-iris-predictor-default-00001-deployment-7958c8bfddv68k9   0/2     PodInitializing   0          51s
+kserve-test                     sklearn-iris-predictor-default-00001-deployment-7958c8bfddv68k9   1/2     Running           0          97s
+kserve-test                     sklearn-iris-predictor-default-00001-deployment-7958c8bfddv68k9   2/2     Running           0          98s
+```
+
+**2. Check InferenceService status.**
+
+```sh
+kubectl get inferenceservices sklearn-iris -n kserve-test
+NAME           URL                                                 READY   PREV   LATEST   PREVROLLEDOUTREVISION   LATESTREADYREVISION                    AGE
+sklearn-iris   http://sklearn-iris.kserve-test.example.com         True           100                              sklearn-iris-predictor-default-47q2g   7d23h
+```
+
+If your DNS contains example.com please consult your admin for configuring DNS or using [custom domain](https://knative.dev/docs/serving/using-a-custom-domain).
+
+**3. Determine the ingress IP and ports**
+
+Execute the following command to determine if your kubernetes cluster is running in an environment that supports external load balancers
+
+```sh
+$ kubectl get svc istio-ingressgateway -n istio-system
+NAME                   TYPE           CLUSTER-IP       EXTERNAL-IP      PORT(S)   AGE
+istio-ingressgateway   LoadBalancer   172.21.109.129   130.211.10.121   ...       17h
+```
+or @microk8s with kubeflow
+
+```sh
+(base) ╭─sungsoo@sungsoo-HP-Z840 ~
+╰─$ kubectl get svc istio-ingressgateway -n kubeflow
+NAME                   TYPE           CLUSTER-IP       EXTERNAL-IP    PORT(S)                                                                                                                                                                   AGE
+istio-ingressgateway   LoadBalancer   10.152.183.116   10.64.140.43   15020:32267/TCP,80:32425/TCP,443:31890/TCP,15029:31587/TCP,15030:31591/TCP,15031:32223/TCP,15032:32596/TCP,15443:32307/TCP,15011:32504/TCP,8060:32176/TCP,853:30715/TCP   12h
+```
+
+#### Load Balancer
+If the EXTERNAL-IP value is set, your environment has an external load balancer that you can use for the ingress gateway.
+
+```sh
+export INGRESS_HOST=$(kubectl -n istio-system get service istio-ingressgateway -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
+export INGRESS_PORT=$(kubectl -n istio-system get service istio-ingressgateway -o jsonpath='{.spec.ports[?(@.name=="http2")].port}')
+```
+
+or @microk8s with kubeflow
+
+```sh
+export INGRESS_HOST=$(kubectl -n kubeflow get service istio-ingressgateway -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
+export INGRESS_PORT=$(kubectl -n kubeflow get service istio-ingressgateway -o jsonpath='{.spec.ports[?(@.name=="http2")].port}')
+```
+
+
+#### Node Port
+If the EXTERNAL-IP value is none (or perpetually pending), your environment does not provide an external load balancer for the ingress gateway. In this case, you can access the gateway using the service’s node port.
+
+```sh
+# GKE
+export INGRESS_HOST=worker-node-address
+# Minikube
+export INGRESS_HOST=$(minikube ip)
+# Other environment(On Prem)
+export INGRESS_HOST=$(kubectl get po -l istio=ingressgateway -n istio-system -o jsonpath='{.items[0].status.hostIP}')
+export INGRESS_PORT=$(kubectl -n istio-system get service istio-ingressgateway -o jsonpath='{.spec.ports[?(@.name=="http2")].nodePort}')
+```
+
+#### Port Forward
+Alternatively you can do Port Forward for testing purpose
+
+```sh
+INGRESS_GATEWAY_SERVICE=$(kubectl get svc --namespace istio-system --selector="app=istio-ingressgateway" --output jsonpath='{.items[0].metadata.name}')
+kubectl port-forward --namespace istio-system svc/${INGRESS_GATEWAY_SERVICE} 8080:80
+# start another terminal
+export INGRESS_HOST=localhost
+export INGRESS_PORT=8080
+```
 
 ## Key Concepts of Model Serving and Integration for TrainDB-ML
