@@ -309,17 +309,18 @@ If your DNS contains example.com please consult your admin for configuring DNS o
 Execute the following command to determine if your kubernetes cluster is running in an environment that supports external load balancers
 
 ```sh
-$ kubectl get svc istio-ingressgateway -n istio-system
-NAME                   TYPE           CLUSTER-IP       EXTERNAL-IP      PORT(S)   AGE
-istio-ingressgateway   LoadBalancer   172.21.109.129   130.211.10.121   ...       17h
+(base) ╭─sungsoo@z840 ~
+╰─$ kubectl get svc istio-ingressgateway -n istio-system
+NAME                   TYPE           CLUSTER-IP       EXTERNAL-IP    PORT(S)                                      AGE
+istio-ingressgateway   LoadBalancer   10.152.183.253   10.64.140.44   15021:30083/TCP,80:30621/TCP,443:31180/TCP   97m
 ```
 or @microk8s with kubeflow
 
 ```sh
-(base) ╭─sungsoo@sungsoo-HP-Z840 ~
+(base) ╭─sungsoo@z840 ~
 ╰─$ kubectl get svc istio-ingressgateway -n kubeflow
 NAME                   TYPE           CLUSTER-IP       EXTERNAL-IP    PORT(S)                                                                                                                                                                   AGE
-istio-ingressgateway   LoadBalancer   10.152.183.116   10.64.140.43   15020:32267/TCP,80:32425/TCP,443:31890/TCP,15029:31587/TCP,15030:31591/TCP,15031:32223/TCP,15032:32596/TCP,15443:32307/TCP,15011:32504/TCP,8060:32176/TCP,853:30715/TCP   12h
+istio-ingressgateway   LoadBalancer   10.152.183.189   10.64.140.43   15020:30524/TCP,80:32346/TCP,443:30625/TCP,15029:32677/TCP,15030:31221/TCP,15031:30365/TCP,15032:32761/TCP,15443:30695/TCP,15011:32155/TCP,8060:30589/TCP,853:31558/TCP   23h
 ```
 
 #### Load Balancer
