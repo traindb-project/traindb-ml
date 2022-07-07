@@ -132,9 +132,6 @@ istioctl install -y
 
 ```sh
 (base) ╭─sungsoo@z840 ~/kubeflow/istio-1.11.0
-╰─$ bin/istoctl install
-zsh: no such file or directory: bin/istoctl
-(base) ╭─sungsoo@z840 ~/kubeflow/istio-1.11.0
 ╰─$ bin/istioctl install                                                                                                                                        127 ↵
 This will install the Istio 1.11.0 default profile with ["Istio core" "Istiod" "Ingress gateways"] components into the cluster. Proceed? (y/N) y
 ✔ Istio core installed
