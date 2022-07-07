@@ -1,7 +1,7 @@
 # KServe setup and testing (starting from 5 July)
 
 - Sung-Soo Kim
-- Updated: 5 July, 2022.
+- Updated: 7 July, 2022.
 
 
 This page describes KServe installation and testing procedure for Kubeflow on Microk8s.
