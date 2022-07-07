@@ -255,6 +255,12 @@ Events:
 
 * Article Source: [First InferenceService](https://kserve.github.io/website/get_started/first_isvc/)
 
+먼저 업로드한 아래 두개 파일을 참고해서 진행한다.
+
+* iris-sklearn.yaml: inference service deploy를 위한 파일
+* iris-inference-call.sh: 서빙하고 있는 Iris 모델을 호출하는 스크립트
+
+
 ### Run your first InferenceService
 
 In this tutorial, you will deploy a ScikitLearn InferenceService.
