@@ -6,6 +6,8 @@
 * [KServe Features and Examples](https://github.com/kserve/kserve/tree/master/docs/samples)
 
 ---
+* Sung-Soo Kim
+* Updated: 11 July, 2022.
 
 This is a sample for KServe SDK v1beta1. 
 
