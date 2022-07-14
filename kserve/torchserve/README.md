@@ -82,8 +82,42 @@ Install torch-model-archiver and torchserve.
 ```sh
 pip install torch-model-archiver torchserve  
 ```
-   
-   
+
+Install Captum (Model Interpretability for PyTorch).
+
+```sh
+pip install captum
+```
+
+
+## 1. PyTorch ML model generation
+
+We use the pretrained model of ResNet by executing the Python file (get_pretrained_model.py).
+
+```sh
+(torchserve) ╭─sungsoo@lavender ~/github/traindb-ml/kserve/torchserve ‹main●›
+╰─$ python get_pretrained_model.py
+```
+[Alternative] If you perfom and finish a training phase, save the model file via PyTorch model save function.
+Then you use that model. 
+
+
+## 2. Model archiver file generation for torchserve
+
+Then execute the generate_mar.sh script file.
+
+```sh
+(torchserve) ╭─sungsoo@lavender ~/github/traindb-ml/kserve/torchserve ‹main●›
+╰─$ generate_mar.sh
+```
+
+Execute the serve_model.sh script file.
+
+```sh
+
+
+
+
 
    
     	
