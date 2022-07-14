@@ -15,6 +15,8 @@
 
 This page describes major procedure for serving PyTorch models.
 
+## Summary
+
 I summarize these procedures as the following.
 
 0. Install Required Dependencies
