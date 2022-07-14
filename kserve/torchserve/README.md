@@ -111,11 +111,26 @@ Then execute the generate_mar.sh script file.
 ╰─$ generate_mar.sh
 ```
 
-Execute the serve_model.sh script file.
+Execute the serve_model.sh script file to serve the model using the archiver file.
 
 ```sh
+(torchserve) ╭─sungsoo@lavender ~/github/traindb-ml/kserve/torchserve ‹main›
+╰─$ serve_model.sh
+```
 
+To perform inference call testing, you can use the call_model.sh script file.
 
+```sh
+(torchserve) ╭─sungsoo@lavender ~/github/traindb-ml/kserve/torchserve ‹main›
+╰─$ call_model.sh
+{
+  "tabby": 0.4086446464061737,
+  "tiger_cat": 0.35061565041542053,
+  "Egyptian_cat": 0.12609602510929108,
+  "lynx": 0.02332688681781292,
+  "bucket": 0.011855168268084526
+}%
+```
 
 
 
