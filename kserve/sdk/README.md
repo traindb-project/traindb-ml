@@ -1,4 +1,4 @@
-# KServe Python SDK for Model Serving (Not yet)
+# KServe Python SDK for Model Serving (Not started yet)
 
 - Sung-Soo Kim
 - Updated: 14 July, 2022.
