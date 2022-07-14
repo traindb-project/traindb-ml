@@ -80,7 +80,7 @@ sudo apt install --no-install-recommends -y openjdk-11-jre-headless
 Install torch-model-archiver and torchserve.
 
 ```sh
-conda install torch-model-archiver torchserve  
+pip install torch-model-archiver torchserve  
 ```
    
    
