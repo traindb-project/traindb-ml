@@ -35,7 +35,7 @@ This is the input image for image classification model (resnet model).
 
 ![](kitten.jpg)
 
-This is the result of resnet model inference call.
+This is the result of resnet model inference call. (object name with confidence rate)
 
 ```sh
 (pytorch) ╭─sungsoo@z840 ~/test/torchserve-exercise
