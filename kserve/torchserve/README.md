@@ -54,7 +54,7 @@ This is the result of resnet model inference call. (object name with confidence 
 
 I use conda for installing the required Python packages.
 
-Create virtual env. with Python >= 3.8.
+Create your virtual environment with Python >= 3.8.
 
 ```sh
 (base) ╭─sungsoo@lavender ~/github/traindb-ml/kserve/torchserve ‹main●›
