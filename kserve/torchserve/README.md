@@ -77,7 +77,7 @@ Torchserve requires Java JDK 11 while deploying
 sudo apt install --no-install-recommends -y openjdk-11-jre-headless
 ```
 
-Install
+Install torch-model-archiver and torchserve.
 
 ```sh
 conda install torch-model-archiver torchserve  
