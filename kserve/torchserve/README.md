@@ -33,7 +33,7 @@ I summarize these procedures for serving PyTorch models as the following.
 
 This is the input image for image classification model (resnet model).
 
-![](../kitten.jpg)
+![](kitten.jpg)
 
 This is the result of resnet model inference call.
 
