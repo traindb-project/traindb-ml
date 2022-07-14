@@ -17,7 +17,7 @@ This page describes major procedure for serving PyTorch models.
 
 ## Summary
 
-I summarize these procedures as the following.
+I summarize these procedures for serving PyTorch models as the following.
 
 0. Install Required Dependencies
 1. PyTorch ML model generation (especially, pretrained resnet_18 model)
