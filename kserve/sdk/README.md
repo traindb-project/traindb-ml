@@ -9,6 +9,7 @@
 ### References
 
 * [KServe Python SDK](https://kserve.github.io/website/master/sdk_docs/sdk_doc/)
+* [Kubeflow Fairing E2E MNIST Case: Building, Training and Serving](https://notebook.community/kubeflow/fairing/examples/mnist/mnist_e2e_on_prem)
 
 ---
 
