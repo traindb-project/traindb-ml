@@ -45,3 +45,9 @@ Refer to details in KServe client API as the following link.
 This diagram shows the architecture for TrainDB-ML implementation in terms of service architecture.
 
 ![](implementation_arch.png)
+
+## Major concepts of Kubeflow training and prediction
+
+This diagram shows major concepts of Kubeflow training and prediction.
+
+![](kf_concepts.png)
