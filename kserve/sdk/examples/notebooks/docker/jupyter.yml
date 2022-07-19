@@ -1,0 +1,47 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: jupyter
+  labels:
+    app: jupyter
+spec:
+  ports:
+  - port: 80
+    name: http
+    targetPort: 8888
+  selector:
+    app: jupyter
+  type: LoadBalancer
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: jupyter
+  labels:
+    app: jupyter
+spec:
+  initContainers:
+    - name: git-clone
+      image: alpine/git
+      args:
+          - clone
+          - --single-branch
+          - --
+          - https://github.com/kubernetes-client/python.git
+          - /data
+      volumeMounts:
+      - mountPath: /data
+        name: notebook-volume
+  containers:
+    - name: jupyter
+      image: skippbox/jupyter:0.0.3
+      ports:
+      - containerPort: 8888
+        protocol: TCP
+        name: http
+      volumeMounts:
+        - mountPath: /root
+          name: notebook-volume
+  volumes:
+  - name: notebook-volume
+    emptyDir: {}
