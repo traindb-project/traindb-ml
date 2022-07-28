@@ -8,6 +8,12 @@
 
 To achieve this goal, we evaluate existing methods related to cardinality estimation.
 
+## Major Steps
+
+* Step#1. collect existing baselines for cardinality estimation.
+* Step#2. implement approximate computation module for AQP using cardinality estimator.
+* Step#3. evaluate the AQP performance (accuracy and processing speed).
+
 
 We compare both traditional and ML-enhanced methods for CardEst and show a list in the following. All of these methods are originally developed and tuned on the IMDB dataset, we took much effort to fine-tune different models for the STATS datasets.
 
