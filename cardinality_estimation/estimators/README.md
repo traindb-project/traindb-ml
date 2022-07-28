@@ -16,7 +16,7 @@ To achieve this goal, we evaluate existing methods related to cardinality estima
 
 ## Problems
 
-* How can we compute approximate results using cardinality estimation?
+* How can we compute approximate results of given AQP queries using cardinality estimation?
 
 ## Our Method
 
