@@ -7,6 +7,8 @@ We compare both traditional and ML-enhanced methods for CardEst and show a list 
 
 In particular, we need to extend *data-driven* models for learned approximate query processing in TrainDB.
 
+We'll implement various functions to handle TPC-H and Instacart datasets for AQP.
+
 We consider the following methods as baselines for AQP evaluation using cardinality estimation.
 
 ### Traditional Methods:
