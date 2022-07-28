@@ -1,7 +1,7 @@
 # Learned Cardinality Estimators
 
 - Sung-Soo Kim
-- Last Updted: 28 July, 2022
+- Last Updated: 28 July, 2022
 
 ## Goals
 * To develop new learned AQP models
