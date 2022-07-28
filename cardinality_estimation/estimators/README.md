@@ -14,9 +14,13 @@ To achieve this goal, we evaluate existing methods related to cardinality estima
 * Step#2. implement approximate computation module for AQP using cardinality estimator.
 * Step#3. evaluate the AQP performance (accuracy and processing speed).
 
+## Problems
+
+* How can we compute approximate results using cardinality estimation?
+
 ## Our Method
 
-TBD
+* TBD
 
 
 ## AQP Performance Comparison
