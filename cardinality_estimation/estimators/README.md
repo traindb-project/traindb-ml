@@ -56,6 +56,7 @@ We consider the following methods as baselines for AQP evaluation using cardinal
     - Code:https://github.com/neurocard/neurocard
   - UAE
     - Paper:https://dl.acm.org/doi/10.1145/3448016.3452830
+    - Code: N/A
   - DeepDB
     - Paper:https://arxiv.org/pdf/1909.00607.pdf
     - Code:https://github.com/DataManagementLab/deepdb-public
