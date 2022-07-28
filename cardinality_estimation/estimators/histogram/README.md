@@ -1,3 +1,0 @@
-# Traditional Methods
-
-Histogram
