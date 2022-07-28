@@ -55,6 +55,9 @@ We consider the following methods as baselines for AQP evaluation using cardinal
   - Bayescard:
     - Paper:https://arxiv.org/pdf/2012.14743.pdf
     - Code:https://github.com/wuziniu/BayesCard
+  - Naru  
+    - Paper: [Deep Unsupervised Cardinality Estimation](http://www.vldb.org/pvldb/vol13/p279-yang.pdf)
+    - Code Reference: [repo](https://github.com/naru-project/naru)
   - Neurocard
     - Paper:https://arxiv.org/pdf/2006.08109.pdf
     - Code:https://github.com/neurocard/neurocard
