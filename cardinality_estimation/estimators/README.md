@@ -14,6 +14,9 @@ To achieve this goal, we evaluate existing methods related to cardinality estima
 * Step#2. implement approximate computation module for AQP using cardinality estimator.
 * Step#3. evaluate the AQP performance (accuracy and processing speed).
 
+## Our Method
+
+TBD
 
 We compare both traditional and ML-enhanced methods for CardEst and show a list in the following. All of these methods are originally developed and tuned on the IMDB dataset, we took much effort to fine-tune different models for the STATS datasets.
 
