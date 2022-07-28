@@ -44,3 +44,6 @@ We consider the following methods as baselines for AQP evaluation using cardinal
   - FLAT:
     - Paper:https://vldb.org/pvldb/vol14/p1489-zhu.pdf
     - Code[FSPN]:https://github.com/wuziniu/FSPN
+
+In the case of DeepDB, first, we exploit native SPN rather than PyTorch-based SPN.
+If we develop the stable AQP functionality, we'll replace the native SPN with PyTorch-based SPN.
