@@ -46,6 +46,7 @@ We consider the following methods as baselines for AQP evaluation using cardinal
     - Code:https://github.com/andreaskipf/learnedcardinalities
   - LW-XGB & LW-NN
     - Paper:http://www.vldb.org/pvldb/vol12/p1044-dutt.pdf
+    - Code: N/A
 
 ### Data-Driven Methods
   - Bayescard:
