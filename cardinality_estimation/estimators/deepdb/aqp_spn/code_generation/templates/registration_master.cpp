@@ -1,1 +1,0 @@
-    m.def("spn{spn_id}", &spn{spn_id}, "Generate expectation on SPN", py::arg("relevantScope"), py::arg("featureScope"), {passed_params});
