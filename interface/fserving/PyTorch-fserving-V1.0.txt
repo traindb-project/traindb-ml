@@ -1,0 +1,280 @@
+PyTorch fserving (flask serving)
+
+
+1.	Creating PV
+
+	PyTorch-training-V1.0.docx 참조 
+
+
+2.	Creating PVC 
+
+	PyTorch-training-V1.0.docx 참조 
+
+
+ 
+3.	Build Image
+
+Pytorch serving POD Example에서 실행될 Docker Image는 손글씨 인식 모델인 MNIST 모델을 사용한다.
+제작된 Docker Image는 Docker Hub에 Push되어야 한다.
+
+Docker image 제작을 위한 명령어는 다음과 같다.
+
+①	Docker Image를 Build한다.
+sudo docker build -f Dockerfile_fserving -t pytorchjob-fserving-mnist .
+
+②	Docker Image를 Tagging한다.
+sudo docker tag pytorchjob-fserving-mnist joleedocker/pytorchjob-fserving-mnist:1.0
+
+③	Docker Image를 Docker Hub에 Push한다.
+sudo docker push joleedocker/pytorchjob-fserving-mnist:1.0
+
+④	생성된 Docker image를 확인한다.
+sudo docker images
+
+Docker image 제작을 위한 Dockerfile은 다음과 같다.
+
+	Dockerfile_fserving
+FROM pytorch/pytorch:1.0-cuda10.0-cudnn7-runtime
+
+RUN apt update
+RUN apt install software-properties-common -y
+RUN add-apt-repository ppa:deadsnakes/ppa -y
+RUN apt install python3.7 --version -y
+RUN python -m pip install --upgrade pip
+
+RUN pip install tensorboardX==1.6.0
+RUN pip install flask
+RUN pip install pandas
+
+RUN mkdir -p /opt/mnist
+RUN mkdir -p /opt/mnist/models
+
+WORKDIR /opt/mnist/src
+ADD mnist_fserving.py /opt/mnist/src/mnist_fserving.py
+
+RUN  chgrp -R 0 /opt/mnist \
+  && chmod -R g+rwX /opt/mnist
+
+EXPOSE 80
+
+ENTRYPOINT ["python3", "/opt/mnist/src/mnist_fserving.py"]
+
+
+	mnist_fserving.py
+from __future__ import print_function
+
+from flask import Flask, request, jsonify
+import json
+import csv
+import pandas as pd
+from datetime import datetime, timedelta
+
+import argparse
+import os
+
+#from tensorboardX import SummaryWriter
+from torchvision import datasets, transforms
+import torch
+import torch.distributed as dist
+import torch.nn as nn
+import torch.nn.functional as F
+import torch.optim as optim
+from torch import tensor
+
+WORLD_SIZE = int(os.environ.get('WORLD_SIZE', 1))
+
+app = Flask(__name__)
+global_variable = 111
+
+class Net(nn.Module):
+    def __init__(self):
+        super(Net, self).__init__()
+        self.conv1 = nn.Conv2d(1, 20, 5, 1)
+        self.conv2 = nn.Conv2d(20, 50, 5, 1)
+        self.fc1 = nn.Linear(4*4*50, 500)
+        self.fc2 = nn.Linear(500, 10)
+
+    def forward(self, x):
+        x = F.relu(self.conv1(x))
+        x = F.max_pool2d(x, 2, 2)
+        x = F.relu(self.conv2(x))
+        x = F.max_pool2d(x, 2, 2)
+        x = x.view(-1, 4*4*50)
+        x = F.relu(self.fc1(x))
+        x = self.fc2(x)
+        return F.log_softmax(x, dim=1)
+
+MODEL = Net()
+
+def load_model(model_name):
+    model_export_dir = "/opt/mnist/models"
+
+    global MODEL
+
+MODEL.load_state_dict(torch.load(model_export_dir+model_name))
+
+    print("model load ok")
+
+
+@app.route('/')
+def home():
+    return "Hello !!!\n"
+
+@app.route('/predict', methods=['POST'])
+def predict_json():
+    params = request.get_json()
+    data = params['data']
+
+    data = eval(data)
+    global MODEL
+    output = MODEL(data)
+    print("output:", output)
+
+    output_str = str(output).replace("\n", "")
+    json_str = jsonify(output_str)
+    return json_str
+
+
+if __name__=='__main__':
+    load_model("mnist_cnn.pt")
+    app.run(host="0.0.0.0",port=80)
+
+
+ 
+4.	Creating a PyTorch serving service
+
+Pytorch serving pod를 외부에서 호출하기 위해서는 service 배포가 필요하다. 
+
+①	Pytorch serving service를 Kubernetes namespace kubeflow에 배포한다.
+kubectl create -f traindb-fserving-mnist-service.yaml -n kubeflow
+service/traindb-fserving-mnist-service created
+
+YAML파일은 다음과 같다.
+
+	traindb-fserving-mnist-service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: traindb-fserving-mnist-service
+spec:
+  type: ClusterIP
+  #type: LoadBalancer
+  #type: NodePort
+  ports:
+    - name: "traindb-fserving-mnist-port"
+      protocol: "TCP"
+      port: 8282
+      targetPort: 80
+  selector:
+    name: traindb-fserving-mnist-pod
+
+②	배포된 Pytorch serving service를 확인한다.
+kubectl get svc traindb-fserving-mnist-service -n kubeflow                           
+NAME                             TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)    AGE
+traindb-fserving-mnist-service   ClusterIP   10.152.183.106   <none>        8282/TCP   27s
+
+③	Pytorch serving service를 삭제할 경우 아래 명령어를 실행한다.
+kubectl delete svc traindb-fserving-mnist-service -n kubeflow
+pod " traindb-fserving-mnist-pod-796b4d7d57-qmnbf " deleted
+
+④	Pytorch serving service가 삭제된 것을 확인한다.
+kubectl get svc traindb-fserving-mnist-service -n kubeflow                           
+No resources found in kubeflow namespace.
+
+ 
+5.	Creating a PyTorch serving pod
+
+①	Pytorch serving POD를 Kubernetes namespace kubeflow에 배포한다.
+kubectl create -f traindb-fserving-mnist-pod.yaml -n kubeflow
+
+YAML파일은 다음과 같다.
+
+	traindb-fserving-mnist-pod.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: traindb-fserving-mnist-pod
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      name: traindb-fserving-mnist-pod
+  template:
+    metadata:
+      labels:
+        name: traindb-fserving-mnist-pod
+    spec:
+      volumes:
+        - name: task-pv-storage
+          persistentVolumeClaim:
+            claimName: traindb-models-claim
+
+      containers:
+        - name: traindb-mnist-serving-container
+          image: joleedocker/pytorchjob-fserving-mnist:1.0
+          ports:
+            - containerPort: 80
+          volumeMounts:
+            - mountPath: "/opt/mnist/models"
+              name: task-pv-storage
+          command:
+            - "python3"
+            - "/opt/mnist/src/mnist_fserving.py"
+
+
+②	배포된 Pytorch serving POD를 확인한다.
+kubectl get pods traindb-fserving-mnist-pod -n kubeflow                           
+NAME                                          READY   STATUS    RESTARTS   AGE
+traindb-fserving-mnist-pod-796b4d7d57-qmnbf   1/1     Running   0          19m
+
+
+⑤	배포된 Pytorch serving POD의 실행 로그를 확인한다.
+kubectl logs -f pod traindb-fserving-mnist-pod -n kubeflow
+
+* Serving Flask app 'mnist_fserving' (lazy loading)
+ * Environment: production
+   WARNING: This is a development server. Do not use it in a production deployment.
+   Use a production WSGI server instead.
+ * Debug mode: off
+ * Running on all addresses.
+   WARNING: This is a development server. Do not use it in a production deployment.
+ * Running on http://10.1.165.119:80/ (Press CTRL+C to quit)
+127.0.0.1 - - [17/Jun/2022 11:56:33] "POST /predict HTTP/1.1" 200 -
+
+
+⑥	Pytorch serving POD를 삭제할 경우 다음 명령을 실행한다.
+kubectl delete pods traindb-fserving-mnist-pod -n kubeflow
+pod " traindb-fserving-mnist-pod-796b4d7d57-qmnbf " deleted
+
+
+⑦	Pytorch serving POD가 삭제된 것을 확인한다.
+kubectl get pods traindb-fserving-mnist-pod -n kubeflow                           
+No resources found in kubeflow namespace.
+
+ 
+6.	port forwarding
+
+Pytorch serving pod를 외부에서 호출하기 위한 service에 대한 port forward를 수행한다. 
+
+kubectl port-forward -n kubeflow svc/traindb-fserving-mnist-service 12345:8282 &
+Forwarding from 127.0.0.1:12345 -> 8282
+Forwarding from [::1]:12345 -> 8282
+
+
+7.	predict
+
+host에서 curl 명령을 수행하여 Pytorch serving pod를 호출한다.
+
+curl --header "Content-Type: application/json" \
+  --request POST \
+  --data '{"data": "tensor([[[-0.4242, -0.4242, .… -0.4242, -0.4242]]])", "target": 0}' \
+  http://127.0.0.1:12345/predict
+
+해당 curl명령은 파일(curl_client)로 제공된다. 
+
+아래와 같은 결과를 반환 받는다.
+	결과 
+"tensor([[ -9.3838, -11.5968, -10.1334, -10.4617,  -9.8735,  -2.7170,  -9.0913,          -1.5140,  -5.0207,  -0.3468]], grad_fn=<LogSoftmaxBackward0>)"
+
+
+

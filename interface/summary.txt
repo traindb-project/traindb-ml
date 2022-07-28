@@ -1,0 +1,25 @@
+설치 및 실행 순서
+
+1. kubernetes 실행 환경 설치 (/Install_Manual_MicroK8S_Kubeflow_Docker-V1.0.docx 참조)
+   - microk8s 설치
+   - juju 설치
+   - kubeflow 설치
+   - Docker 설치
+
+
+2. pytorchjob training (/training/PyTorch-training-V1.0.docx 참조)
+   - PyTorch Operator 설치
+   - PyTorchJob 지원 확인
+   - PV(persistent volume) 생성
+   - Creating PVC
+   - Build Image 
+   - Creating a PyTorch training job
+   - Monitoring a PyTorchJob
+
+
+3. model serving (/fserving/PyTorch-fserving-V1.0.docx 참조)
+   - Build Image
+   - Creating a PyTorch serving service
+   - Creating a PyTorch serving pod
+   - port forwarding
+   - predict
