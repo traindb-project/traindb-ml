@@ -59,4 +59,4 @@ We consider the following methods as baselines for AQP evaluation using cardinal
 
 In the case of DeepDB, first, we exploit native SPN rather than PyTorch-based SPN.
 
-If we develop the stable AQP functionality, we'll replace the native SPN with PyTorch-based SPN.
+If we develop the stable AQP functionality, we'll replace the native SPN with PyTorch-based SPN to obtain performance gain.
