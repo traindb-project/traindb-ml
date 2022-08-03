@@ -1,5 +1,10 @@
-# development interfaces
+# REST API for Development using Fast API
 
-## main.py
+- main.py
 
-## setup.py
+## Endpoints
+
+- /train/{model}
+  - /update
+- /estimate/{query}
+- /delete/{model}
