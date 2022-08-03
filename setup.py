@@ -93,11 +93,13 @@ if __name__ == '__main__':
     dataset_path = "data/files/" + args.dataset
     dataset_csv_path = dataset_path + "/csv/"
     dataset_hdf_path = dataset_path + "/hdf/"
-    logger.info( " - Setup Directories: "
+    logger.info( " - Setup Directories: " )
+    """
               + f" input_csv_path: {args.csv_path}"
               + f" dataset_path: {dataset_path}"
               + f" dataset_csv_path: {dataset_csv_path}"
               + f" dataset_hdf_path: {dataset_hdf_path}")
+    """
 
     #  - create csv directory
     logger.info(f" - Making csv path {dataset_csv_path}")
@@ -136,6 +138,7 @@ if __name__ == '__main__':
     os.makedirs(dataset_hdf_path)
 
     # TODO
+    logger.info("bookmark")
     #prepare_all_tables(schema, dataset_hdf_path, args.csv_seperator, max_table_data = args.max_rows_per_hdf_file)
 
     

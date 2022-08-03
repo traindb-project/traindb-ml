@@ -12,7 +12,7 @@ def gen_instacart_schema(csv_path):
                            attributes=['order_id', 'user_id', 'eval_set', 
                                        'order_number', 'order_dow', 
                                        'order_hour_of_day', 'days_since_prior_order'],
-                           csv_file_location=csv_path,#.format('orders_sampled'),
+                           csv_file_location=csv_path.format('orders'),#_sampled'),
                            table_size=28800991, 
                            primary_key=['order_id'],
                            sample_rate=10000000 / 28800991
