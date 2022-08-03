@@ -1,7 +1,26 @@
-from ensemble_compilation.graph_representation import SchemaGraph, Table
+# original: from ensemble_compilation.graph_representation import SchemaGraph, Table
+from structure.graph_representation import SchemaGraph, Table
 
-# TODO (2022.07.27) tpc-ds --> instacart
+# For TrainDB-ML: instacart.orders
 def gen_instacart_schema(csv_path):
+    """
+    Instacart Orders schema
+    """
+
+    schema = SchemaGraph()
+    schema.add_table(Table('orders',
+                           attributes=['order_id', 'user_id', 'eval_set', 
+                                       'order_number', 'order_dow', 
+                                       'order_hour_of_day', 'days_since_prior_order'],
+                           csv_file_location=csv_path,#.format('orders_sampled'),
+                           table_size=28800991, 
+                           primary_key=['order_id'],
+                           sample_rate=10000000 / 28800991
+                           ))
+    return schema
+
+
+def gen_10gb_tpc_ds_schema(csv_path):
     """
     TPCDS 10g schema
     """
