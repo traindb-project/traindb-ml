@@ -1,4 +1,5 @@
 import argparse
+import sys
 import os
 import shutil
 import logging
@@ -78,10 +79,15 @@ if __name__ == '__main__':
     #
     # CONF.RESTAPI
     #
-    # TODO: launch the fast_api (/interface/dev/main.py)
+    # launch the fast_api (/interface/dev/main.py)
+    # prerequisite: pip install fastapi uvicorn
+    # testing: launch browser with "http://0.0.0.0:8000" then see hello message
     #
+    os.system('uvicorn main:app --app-dir interface/dev/ --reload --host=0.0.0.0 --port=8000')
+    sys.exit("Shutting down, bye bye!")
 
     #
+    # TODO: separate this as an option
     # CONF.Data_Preparation
     #  - SEE: deepdb/maqp.py, schema.py
     #     prepare_all_tables(...), prepare_sample_hdf(...)
