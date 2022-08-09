@@ -19,6 +19,19 @@ if __name__ == '__main__':
     #
     parser = argparse.ArgumentParser()
 
+    # ARGS.REST 
+    # - location of the main file
+    parser.add_argument('--app_dir', default='interface/dev/', 
+                        help='location of fastapi main file')
+
+    # - ip of the interface
+    parser.add_argument('--host', default='0.0.0.0', 
+                        help='IP address of the interface')
+
+    # - port of the interface
+    parser.add_argument('--port', default='8000', 
+                        help='port of the interface')
+
     # ARGS.DATA PREPARATION
     # - dataset to be used
     parser.add_argument('--dataset', default='instacart', 
@@ -83,7 +96,8 @@ if __name__ == '__main__':
     # prerequisite: pip install fastapi uvicorn
     # testing: launch browser with "http://0.0.0.0:8000" then see hello message
     #
-    os.system('uvicorn main:app --app-dir interface/dev/ --reload --host=0.0.0.0 --port=8000')
+    #os.system('uvicorn main:app --app-dir interface/dev/ --reload --host=0.0.0.0 --port=8000')
+    os.system(f"uvicorn main:app --app-dir {args.app_dir} --reload --host={args.host} --port={args.port}")
     sys.exit("Shutting down, bye bye!")
 
     #
