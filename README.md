@@ -6,7 +6,8 @@ Remote ML Model Serving Component for TrainDB
 git clone https://github.com/traindb-project/traindb-ml.git
 cd traindb-ml
 (create venv or conda)
-pip install numpy pandas fastapi
+# install dependencies. for example,
+pip install numpy pandas fastapi uvicorn
 ```
 ## Start
 ```
