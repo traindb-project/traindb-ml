@@ -12,7 +12,22 @@ def read_table_csv(table_obj, csv_seperator=','):
     """
     Reads csv from path, renames columns and drops unnecessary columns
     """
-    df_rows = pd.read_csv(table_obj.csv_file_location, header=None, escapechar='\\', encoding='utf-8', quotechar='"',
+    # Comments by kihyuk-nam
+    # For removing the following warning message:
+    # "
+    #   DtypeWarning: Columns (0,1,3,4,5,6) have mixed types. 
+    #   Specify dtype option on import or set low_memory=False.
+    # "
+    # You may remove the warning by specifying 'low_memory=False' in read_csv
+    # but it seems to hide the real problem.
+    # The following method would be desirable:
+    # dtypes = {'order_id':np.int64, 'user_id':'Int64', 'eval_set':'object', 
+    #           'order_number':'Int64', 'order_dow':'Int64', 'order_hour_of_day':'Int64', 
+    #           'days_since_prior_order':'Float64'} 
+    df_rows = pd.read_csv(table_obj.csv_file_location, header=None, 
+                          escapechar='\\', encoding='utf-8', quotechar='"',
+                          #dtype=dtypes,     # TODO 
+                          low_memory=False, # ADDED. It silences the warning
                           sep=csv_seperator)
     df_rows.columns = [table_obj.table_name + '.' + attr for attr in table_obj.attributes]
 
@@ -47,7 +62,8 @@ def prepare_single_table(schema_graph, table, path, max_distinct_vals=10000, csv
     """
     table_meta_data = dict()
     table_obj = schema_graph.table_dictionary[table]
-    table_data = read_table_csv(table_obj, csv_seperator=csv_seperator)
+    table_data = read_table_csv(table_obj, csv_seperator=csv_seperator) 
+    # nam: a warning is generated the above line but I silenced it. SEE the comments inside the function
     table_sample_rate = table_obj.sample_rate
 
     relevant_attributes = [x for x in table_obj.attributes if x not in table_obj.irrelevant_attributes]

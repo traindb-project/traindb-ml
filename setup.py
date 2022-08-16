@@ -144,15 +144,22 @@ if __name__ == '__main__':
     #  - make a SchemaGraph from the csv
     logger.info( "Data Preparation: Create SchemaGraph")
     logger.info(f" - Making SchemaGraphs from {dataset_csv_path}")
-    table_csv_path = dataset_csv_path + '/{}.csv'
+    table_csv_path = dataset_csv_path + '{}.csv'
     if args.dataset == 'instacart':
         schema = gen_instacart_schema(table_csv_path)
     else:
         raise ValueError('Unknown dataset')
 
-    # testing
-    logger.info(f"schema.tables: {schema.tables}")
-    logger.info(f"schema.table_dictionary: {schema.table_dictionary}")
+    #  - test
+    logger.info(f" - Result")
+    table = schema.table_dictionary['orders']
+    logger.info(f"   orders object: {table}")
+    logger.info(f"   orders.table_name: {table.table_name}")
+    logger.info(f"   orders.table_size: {table.table_size}")
+    logger.info(f"   orders.primary_key: {table.primary_key}")
+    logger.info(f"   orders.csv_file_location: {table.csv_file_location}")
+    logger.info(f"   orders.attributes: {table.attributes}")
+    logger.info(f"   orders.sample_rate: {table.sample_rate}")
 
     #
     # CONF.Data_Preparation.Generate_HDF
@@ -168,6 +175,7 @@ if __name__ == '__main__':
     logger.info(f" - Making new {dataset_hdf_path}")
     os.makedirs(dataset_hdf_path)
 
+    # - prepare all tables
     logger.info(f" - Prepare all tables")
     prepare_all_tables(schema, dataset_hdf_path, args.csv_seperator, max_table_data = args.max_rows_per_hdf_file)
 
