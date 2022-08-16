@@ -16,3 +16,6 @@ python3 setup.py --csv_path your_dir/orders.csv
 
 ## For KubeFlow
 - See /interface/kubeflow
+
+## License
+This project is dual-licensed. Apache 2.0 is for traindb-ml, and MIT is for the RSPN codes from deepdb(https://github.com/DataManagementLab/deepdb-public)
