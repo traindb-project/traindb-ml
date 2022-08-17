@@ -12,7 +12,22 @@ def read_table_csv(table_obj, csv_seperator=','):
     """
     Reads csv from path, renames columns and drops unnecessary columns
     """
-    df_rows = pd.read_csv(table_obj.csv_file_location, header=None, escapechar='\\', encoding='utf-8', quotechar='"',
+    # Comments by kihyuk-nam
+    # For removing the following warning message:
+    # "
+    #   DtypeWarning: Columns (0,1,3,4,5,6) have mixed types. 
+    #   Specify dtype option on import or set low_memory=False.
+    # "
+    # You may remove the warning by specifying 'low_memory=False' in read_csv
+    # but it seems to hide the real problem.
+    # The following method would be desirable:
+    # dtypes = {'order_id':np.int64, 'user_id':'Int64', 'eval_set':'object', 
+    #           'order_number':'Int64', 'order_dow':'Int64', 'order_hour_of_day':'Int64', 
+    #           'days_since_prior_order':'Float64'} 
+    df_rows = pd.read_csv(table_obj.csv_file_location, header=None, 
+                          escapechar='\\', encoding='utf-8', quotechar='"',
+                          #dtype=dtypes,     # TODO 
+                          low_memory=False, # ADDED. It silences the warning
                           sep=csv_seperator)
     df_rows.columns = [table_obj.table_name + '.' + attr for attr in table_obj.attributes]
 
@@ -36,50 +51,13 @@ def find_relationships(schema_graph, table, incoming=True):
     return relationships
 
 
-def prepare_single_table(schema_graph, table, path, max_distinct_vals=10000, csv_seperator=',',
-                         max_table_data=20000000):
+def add_multiplier_fields(table, table_obj, table_data, table_meta_data, 
+                          relevant_attributes, schema_graph, csv_seperator):
     """
-    Reads table csv. Adds multiplier fields, missing value imputation, dict for categorical data. Adds null tuple tables.
-
-    :param schema_graph:
-    :param table:
-    :return:
+    Add multiplier fields
+    * Refactored(Extract Function) from prepare_single_table [kihyuk-nam:2022.08.17]
+    :return: table_meta_data, table_data, relevant_attributes, incoming_relationships
     """
-    table_meta_data = dict()
-    table_obj = schema_graph.table_dictionary[table]
-    table_data = read_table_csv(table_obj, csv_seperator=csv_seperator)
-    table_sample_rate = table_obj.sample_rate
-
-    relevant_attributes = [x for x in table_obj.attributes if x not in table_obj.irrelevant_attributes]
-
-    table_meta_data['hdf_path'] = path
-    table_meta_data['incoming_relationship_means'] = {}
-
-    # manage functional dependencies
-    logger.info(f"Managing functional dependencies for table {table}")
-    table_meta_data['fd_dict'] = dict()
-    cols_to_be_dropped = []
-    for attribute_wo_table in table_obj.attributes:
-        attribute = table + '.' + attribute_wo_table
-        fd_children = table_obj.children_fd_attributes(attribute)
-        if len(fd_children) > 0:
-            for child in fd_children:
-                logger.info(f"Managing functional dependencies for {child}->{attribute}")
-                distinct_tuples = table_data.drop_duplicates([attribute, child])[[attribute, child]].values
-                reverse_dict = {}
-                for attribute_value, child_value in distinct_tuples:
-                    if reverse_dict.get(attribute_value) is None:
-                        reverse_dict[attribute_value] = []
-                    reverse_dict[attribute_value].append(child_value)
-                if table_meta_data['fd_dict'].get(attribute) is None:
-                    table_meta_data['fd_dict'][attribute] = dict()
-                table_meta_data['fd_dict'][attribute][child] = reverse_dict
-            # remove from dataframe and relevant attributes
-            cols_to_be_dropped.append(attribute)
-            relevant_attributes.remove(attribute_wo_table)
-    table_data.drop(columns=cols_to_be_dropped, inplace=True)
-
-    # add multiplier fields
     logger.info("Preparing multipliers for table {}".format(table))
     incoming_relationships = find_relationships(schema_graph, table, incoming=True)
 
@@ -123,18 +101,49 @@ def prepare_single_table(schema_graph, table, path, max_distinct_vals=10000, csv
 
         table_meta_data['incoming_relationship_means'][relationship_obj.identifier] = table_data[mu_nn_col_name].mean()
 
-    # save if there are entities without FK reference (e.g. orders without customers)
-    outgoing_relationships = find_relationships(schema_graph, table, incoming=False)
-    for relationship_obj in outgoing_relationships:
-        fk_attribute_name = table + '.' + relationship_obj.start_attr
+    return table_meta_data, table_data, relevant_attributes, incoming_relationships 
 
-        table_meta_data[relationship_obj.identifier] = {
-            'fk_attribute_name': fk_attribute_name,
-            'length': table_data[fk_attribute_name].isna().sum() * 1 / table_sample_rate,
-            'path': None
-        }
 
-    # null value imputation and categorical value replacement
+def manage_functional_dependencies(table, table_obj, table_data, table_meta_data, relevant_attributes):
+    """
+    Manage functional dependencies
+    * Refactored(Extract Function) from prepare_single_table [kihyuk-nam:2022.08.17]
+    :return: table_meta_data, table_data, relevant_attributes
+    """
+
+    logger.info(f"Managing functional dependencies for table {table}")
+    table_meta_data['fd_dict'] = dict()
+    cols_to_be_dropped = []
+    for attribute_wo_table in table_obj.attributes:
+        attribute = table + '.' + attribute_wo_table
+        fd_children = table_obj.children_fd_attributes(attribute)
+        if len(fd_children) > 0:
+            for child in fd_children:
+                logger.info(f"Managing functional dependencies for {child}->{attribute}")
+                distinct_tuples = table_data.drop_duplicates([attribute, child])[[attribute, child]].values
+                reverse_dict = {}
+                for attribute_value, child_value in distinct_tuples:
+                    if reverse_dict.get(attribute_value) is None:
+                        reverse_dict[attribute_value] = []
+                    reverse_dict[attribute_value].append(child_value)
+                if table_meta_data['fd_dict'].get(attribute) is None:
+                    table_meta_data['fd_dict'][attribute] = dict()
+                table_meta_data['fd_dict'][attribute][child] = reverse_dict
+            # remove from dataframe and relevant attributes
+            cols_to_be_dropped.append(attribute)
+            relevant_attributes.remove(attribute_wo_table)
+    table_data.drop(columns=cols_to_be_dropped, inplace=True)
+
+    return table_meta_data, table_data, relevant_attributes
+
+def impute_null_value_and_replace_categorical_value(
+    table, table_data, table_meta_data, relevant_attributes, max_distinct_vals):
+    """
+    Impute null value and replace categorical value
+    * Refactored(Extract Function) from prepare_single_table [kihyuk-nam:2022.08.17]
+    :return: table_data, table_meta_data, relevant_attributes, del_cat_attributes
+    """
+
     logger.info("Preparing categorical values and null values for table {}".format(table))
     table_meta_data['categorical_columns_dict'] = {}
     table_meta_data['null_values_column'] = []
@@ -197,28 +206,17 @@ def prepare_single_table(schema_graph, table, path, max_distinct_vals=10000, csv
                 if contains_nan:
                     assert (table_data[attribute] == unique_null_val).any(), "Null value cannot be found"
 
-    # remove categorical columns with too many entries from relevant tables and dataframe
-    relevant_attributes = [x for x in relevant_attributes if x not in del_cat_attributes]
-    logger.info("Relevant attributes for table {} are {}".format(table, relevant_attributes))
-    logger.info("NULL values for table {} are {}".format(table, table_meta_data['null_values_column']))
-    del_cat_attributes = [table + '.' + rel_attribute for rel_attribute in del_cat_attributes]
-    table_data = table_data.drop(columns=del_cat_attributes)
+    return table_data, table_meta_data, relevant_attributes, del_cat_attributes 
 
-    assert len(relevant_attributes) == len(table_meta_data['null_values_column']), \
-        "Length of NULL values does not match"
-    table_meta_data['relevant_attributes'] = relevant_attributes
-    table_meta_data['relevant_attributes_full'] = [table + '.' + attr for attr in relevant_attributes]
-    table_meta_data['length'] = len(table_data) * 1 / table_sample_rate
+def add_table_parts_without_join_partners(
+        table, table_data, table_meta_data, table_sample_rate,
+        incoming_relationships, schema_graph, csv_seperator):
+    """
+    Add table parts without join partners
+    * Refactored(Extract Function) from prepare_single_table [kihyuk-nam:2022.08.17]
+    :return: table_meta_data
+    """
 
-    assert not table_data.isna().any().any(), "Still contains null values"
-
-    # save modified table
-    if len(table_data) < max_table_data:
-        table_data.to_hdf(path, key='df', format='table')
-    else:
-        table_data.sample(max_table_data).to_hdf(path, key='df', format='table')
-
-    # add table parts without join partners
     logger.info("Adding table parts without join partners for table {}".format(table))
     for relationship_obj in incoming_relationships:
         logger.info("Adding table parts without join partners "
@@ -248,11 +246,96 @@ def prepare_single_table(schema_graph, table, path, max_distinct_vals=10000, csv
                 'path': null_tuple_path
             }
             null_tuples.to_hdf(null_tuple_path, key='df', format='table')
-
     return table_meta_data
 
 
+def prepare_single_table(schema_graph, table, path, max_distinct_vals=10000, 
+                         csv_seperator=',',
+                         max_table_data=20000000):
+    """
+    Reads table csv. 
+    Adds multiplier fields, missing value imputation, dict for categorical data. 
+    Adds null tuple tables.
+    * Refactored(Extract Function) from prepare_single_table [kihyuk-nam:2022.08.17]
+
+    :param schema_graph:
+    :param table:
+    :return:
+    """
+    table_meta_data = dict()
+    table_obj = schema_graph.table_dictionary[table]
+    table_data = read_table_csv(table_obj, csv_seperator=csv_seperator) 
+    # nam: a warning is generated the above line but I silenced it. SEE the comments inside the function
+    table_sample_rate = table_obj.sample_rate
+
+    relevant_attributes = [x for x in table_obj.attributes if x not in table_obj.irrelevant_attributes]
+
+    table_meta_data['hdf_path'] = path
+    table_meta_data['incoming_relationship_means'] = {}
+
+    # manage functional dependencies --> refactored
+    table_meta_data, table_data, relevant_attributes = manage_functional_dependencies(
+        table, table_obj, table_data, table_meta_data, relevant_attributes)
+
+    # add multiplier fields --> refactored
+    table_meta_data, table_data, relevant_attributes, incoming_relationships = add_multiplier_fields(
+        table, table_obj, table_data, table_meta_data, relevant_attributes, 
+        schema_graph, csv_seperator)
+
+    # save if there are entities without FK reference (e.g. orders without customers)
+    outgoing_relationships = find_relationships(schema_graph, table, incoming=False)
+    for relationship_obj in outgoing_relationships:
+        fk_attribute_name = table + '.' + relationship_obj.start_attr
+
+        table_meta_data[relationship_obj.identifier] = {
+            'fk_attribute_name': fk_attribute_name,
+            'length': table_data[fk_attribute_name].isna().sum() * 1 / table_sample_rate,
+            'path': None
+        }
+
+    # null value imputation and categorical value replacement
+    table_data, table_meta_data, relevant_attributes, del_cat_attributes = \
+        impute_null_value_and_replace_categorical_value(
+            table, table_data, table_meta_data, relevant_attributes, max_distinct_vals)
+
+    # remove categorical columns with too many entries from relevant tables and dataframe
+    relevant_attributes = [x for x in relevant_attributes if x not in del_cat_attributes]
+    logger.info("Relevant attributes for table {} are {}".format(table, relevant_attributes))
+    logger.info("NULL values for table {} are {}".format(table, table_meta_data['null_values_column']))
+    del_cat_attributes = [table + '.' + rel_attribute for rel_attribute in del_cat_attributes]
+    table_data = table_data.drop(columns=del_cat_attributes)
+
+    assert len(relevant_attributes) == len(table_meta_data['null_values_column']), \
+        "Length of NULL values does not match"
+    table_meta_data['relevant_attributes'] = relevant_attributes
+    table_meta_data['relevant_attributes_full'] = [table + '.' + attr for attr in relevant_attributes]
+    table_meta_data['length'] = len(table_data) * 1 / table_sample_rate
+
+    assert not table_data.isna().any().any(), "Still contains null values"
+
+    # save modified table
+    if len(table_data) < max_table_data:
+        table_data.to_hdf(path, key='df', format='table')
+    else:
+        table_data.sample(max_table_data).to_hdf(path, key='df', format='table')
+
+    # add table parts without join partners --> refactored
+    table_meta_data = add_table_parts_without_join_partners(table, table_data, table_meta_data, table_sample_rate,
+        incoming_relationships, schema_graph, csv_seperator)
+
+    return table_meta_data
+
 def prepare_all_tables(schema_graph, path, csv_seperator=',', max_table_data=20000000):
+    """
+    For all tables in schema_graph, extract meta_data and generate a hdf.
+    This is called by setup.py (maqp.py from deepdb)
+
+    :param schema_graph:
+    :param path:
+    :param csv_seperator:
+    :param max_table_data:
+    :return:
+    """
     prep_start_t = perf_counter()
     meta_data = {}
     for table_obj in schema_graph.tables:

@@ -1,4 +1,17 @@
+"""
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+       http://www.apache.org/licenses/LICENSE-2.0
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+"""
+
 import argparse
+import sys
 import os
 import shutil
 import logging
@@ -18,15 +31,32 @@ if __name__ == '__main__':
     #
     parser = argparse.ArgumentParser()
 
+    # ARGS.REST 
+    # - location of the main file
+    parser.add_argument('--rest_dir', default='interface/dev/', 
+                        help='location of the fastapi main file')
+
+    # - name of the main file
+    parser.add_argument('--rest_main', default='main', 
+                        help='name of the fastapi main file. *.py')
+
+    # - ip of the interface
+    parser.add_argument('--rest_host', default='0.0.0.0', 
+                        help='IP address of the interface')
+
+    # - port of the interface
+    parser.add_argument('--rest_port', default='8000', 
+                        help='port of the interface')
+
     # ARGS.DATA PREPARATION
     # - dataset to be used
     parser.add_argument('--dataset', default='instacart', 
                         help='dataset to be learned')
 
     # - path and separator for csv file
-    parser.add_argument('--csv_path', default='data/files/csv/orders.csv', 
+    parser.add_argument('--csv_path', default='data/files/instacart/csv/orders.csv', 
                         help='csv path for the dataset specified')
-    parser.add_argument('--csv_seperator', default='|')
+    parser.add_argument('--csv_seperator', default=',') # for tpc-ds, use '|'
 
     # - path for hdf file
     parser.add_argument('--hdf_path', default='data/files/instacart/hdf', 
@@ -76,12 +106,7 @@ if __name__ == '__main__':
     logger = logging.getLogger(__name__)
 
     #
-    # CONF.RESTAPI
-    #
-    # TODO: launch the fast_api (/interface/dev/main.py)
-    #
-
-    #
+    # TODO: separate this as an option
     # CONF.Data_Preparation
     #  - SEE: deepdb/maqp.py, schema.py
     #     prepare_all_tables(...), prepare_sample_hdf(...)
@@ -110,6 +135,7 @@ if __name__ == '__main__':
     csv_target_filename = os.path.basename(args.csv_path)
     csv_target_path = dataset_csv_path + csv_target_filename
 
+    # TODO remove if exist? just like the 'hdf'?
     logger.info(f"  (Overwrite? {os.path.exists(csv_target_path)})")
     if (args.csv_path != csv_target_path) and not os.path.exists(csv_target_path):
         shutil.copy(args.csv_path, csv_target_path) 
@@ -118,15 +144,27 @@ if __name__ == '__main__':
     #  - make a SchemaGraph from the csv
     logger.info( "Data Preparation: Create SchemaGraph")
     logger.info(f" - Making SchemaGraphs from {dataset_csv_path}")
-    table_csv_path = dataset_csv_path + '/{}.csv'
+    table_csv_path = dataset_csv_path + '{}.csv'
     if args.dataset == 'instacart':
         schema = gen_instacart_schema(table_csv_path)
     else:
         raise ValueError('Unknown dataset')
 
+    #  - test
+    logger.info(f" - Result")
+    table = schema.table_dictionary['orders']
+    logger.info(f"   orders object: {table}")
+    logger.info(f"   orders.table_name: {table.table_name}")
+    logger.info(f"   orders.table_size: {table.table_size}")
+    logger.info(f"   orders.primary_key: {table.primary_key}")
+    logger.info(f"   orders.csv_file_location: {table.csv_file_location}")
+    logger.info(f"   orders.attributes: {table.attributes}")
+    logger.info(f"   orders.sample_rate: {table.sample_rate}")
+
     #
     # CONF.Data_Preparation.Generate_HDF
     #  - make a hdf from the csv
+    #  - requires: pip install tables
     logger.info( "Data Preparation: Generate HDF")
     logger.info(f" - Generate hdf files for the given csv and save into {dataset_hdf_path}")
 
@@ -137,10 +175,11 @@ if __name__ == '__main__':
     logger.info(f" - Making new {dataset_hdf_path}")
     os.makedirs(dataset_hdf_path)
 
-    # TODO
-    logger.info("bookmark")
-    #prepare_all_tables(schema, dataset_hdf_path, args.csv_seperator, max_table_data = args.max_rows_per_hdf_file)
+    # - prepare all tables
+    logger.info(f" - Prepare all tables")
+    prepare_all_tables(schema, dataset_hdf_path, args.csv_seperator, max_table_data = args.max_rows_per_hdf_file)
 
+    logger.info(f"Bookmark")
     
     # TRAIN RSPNs - NEW or UPDATE
     # TODO
@@ -148,4 +187,15 @@ if __name__ == '__main__':
 
     # ESTIMATE
     # TODO
+
+    #
+    # CONF.RESTAPI
+    #
+    # launch the fast_api (/interface/dev/main.py)
+    # prerequisite: pip install fastapi uvicorn
+    # testing: launch browser with "http://0.0.0.0:8000" then see hello message
+    #
+    #os.system('uvicorn main:app --app-dir interface/dev/ --reload --host=0.0.0.0 --port=8000')
+    os.system(f"uvicorn {args.rest_main}:app --app-dir {args.rest_dir} --reload --host={args.rest_host} --port={args.rest_port}")
+    sys.exit("Shutting down, bye bye!")
 

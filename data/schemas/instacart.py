@@ -1,4 +1,8 @@
-# original: from ensemble_compilation.graph_representation import SchemaGraph, Table
+#
+# Copied from deepdb/ensemble_compilation.graph_representation.py
+# https://github.com/DataManagementLab/deepdb-public/
+# This code uses MIT license.
+#
 from structure.graph_representation import SchemaGraph, Table
 
 # For TrainDB-ML: instacart.orders
@@ -9,12 +13,12 @@ def gen_instacart_schema(csv_path):
 
     schema = SchemaGraph()
     schema.add_table(Table('orders',
+                           primary_key=['order_id'],
                            attributes=['order_id', 'user_id', 'eval_set', 
                                        'order_number', 'order_dow', 
                                        'order_hour_of_day', 'days_since_prior_order'],
-                           csv_file_location=csv_path.format('orders'),#_sampled'),
                            table_size=28800991, 
-                           primary_key=['order_id'],
+                           csv_file_location=csv_path.format('orders'),
                            sample_rate=10000000 / 28800991
                            ))
     return schema
