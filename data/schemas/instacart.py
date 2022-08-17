@@ -3,7 +3,7 @@
 # https://github.com/DataManagementLab/deepdb-public/
 # This code uses MIT license.
 #
-from structure.graph_representation import SchemaGraph, Table
+from train.ensemble_compilation.graph_representation import SchemaGraph, Table
 
 # For TrainDB-ML: instacart.orders
 def gen_instacart_schema(csv_path):
