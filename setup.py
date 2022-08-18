@@ -21,15 +21,16 @@ import time
 from data.schemas.instacart import gen_instacart_schema
 from data.preparation.prepare_single_tables import prepare_all_tables
 from train.ensemble_creation.naive import create_naive_all_split_ensemble
+from evaluation.aqp_evaluation import evaluate_an_aqp_query
 
 np.random.seed(1)
 
 if __name__ == '__main__':
 
-    #
+    #####
     # ARGS - command-line options
     #      - should match the REST API, Knative interface
-    #
+    #####
     parser = argparse.ArgumentParser()
 
     # ARGS.REST 
@@ -55,7 +56,7 @@ if __name__ == '__main__':
     parser.add_argument('--generate_hdf', action='store_true', 
                         help='prepares hdf5 files for single tables')
 
-    # ARGS.LEARN
+    # ARGS.TRAIN
     # - learn tables to create rspn ensemble, new or update
     parser.add_argument('--train', action='store_true', 
                         help='train rspns on the given dataset')
@@ -78,9 +79,13 @@ if __name__ == '__main__':
     parser.add_argument('--incremental_learning_rate', type=int, default=0)
     parser.add_argument('--incremental_condition', type=str, default=None)
 
-    # ARGS.INFERENCE
+    # ARGS.ESTIMATE
     # - estimate an approximate value for the given aggregation query
-    parser.add_argument('--estimate', help='query to be approximated')
+    parser.add_argument('--estimate', action='store_true',
+                        help='query to be approximated')
+    parser.add_argument('--ensemble_location', nargs='+',
+                        default=['model/instances/ensemble_single_instacart_10000000.pkl'])
+    parser.add_argument('--query', default='SELECT SUM(order_id) FROM orders;')
 
     # ARGS.CONFIGURATION
     # - set log level
@@ -89,9 +94,9 @@ if __name__ == '__main__':
     # ARGS.END
     args = parser.parse_args()
 
-    #
+    #####
     # CONF - configurations for traindb-ml
-    #
+    #####
     # CONF.Logging 
     # - copied from deepdb's maqp.py
     #
@@ -108,13 +113,15 @@ if __name__ == '__main__':
         ])
     logger = logging.getLogger(__name__)
 
-    #
-    # TODO: separate this as an REST API
+
+    #####
     # DATA_PREP
     #  - SEE: deepdb/maqp.py, schema.py
     #     prepare_all_tables(...), prepare_sample_hdf(...)
-    #
-    # DATA_PREP.Setup_Directories
+    # TODO: separate this as an REST API
+    #####
+
+    # - setup directories
     logger.info( "Data Preparation: Setup Directories")
     dataset_path = "data/files/" + args.dataset
     dataset_csv_path = dataset_path + "/csv/"
@@ -129,11 +136,11 @@ if __name__ == '__main__':
     logger.info(f" - Making csv path {dataset_csv_path}")
     os.makedirs(dataset_csv_path, exist_ok=True)
 
-    #  - extract the filename from the csv_path and make a target path
+    # - extract the filename from the csv_path and make a target path
     csv_target_filename = os.path.basename(args.csv_path)
     csv_target_path = dataset_csv_path + csv_target_filename
 
-    #  - copy the input csv file into the target path (overwrite if already exists)
+    # - copy the input csv file into the target path (overwrite if already exists)
     # TODO remove if exist? just like the 'hdf'?
     logger.info(f"  (Overwrite? {os.path.exists(csv_target_path)})")
     if (args.csv_path != csv_target_path) and not os.path.exists(csv_target_path):
@@ -148,7 +155,7 @@ if __name__ == '__main__':
     else:
         raise ValueError('Unknown dataset')
 
-    #  - test
+    # - test
     table = schema.table_dictionary['orders']
     logger.info(f"   orders object: {table}")
     logger.info(f"   orders.table_name: {table.table_name}")
@@ -158,11 +165,11 @@ if __name__ == '__main__':
     logger.info(f"   orders.attributes: {table.attributes}")
     logger.info(f"   orders.sample_rate: {table.sample_rate}")
 
-    #  - requires: pip install tables
+    # - requires: pip install tables
     logger.info( "Data Preparation: Generate HDF")
     logger.info(f" - Generate hdf files for the given csv and save into {dataset_hdf_path}")
 
-    #  - create hdf directory
+    # - create hdf directory
     if os.path.exists(dataset_hdf_path):
         logger.info(f" - Removing the old {dataset_hdf_path}")
         shutil.rmtree(dataset_hdf_path)
@@ -172,27 +179,44 @@ if __name__ == '__main__':
     # - prepare all tables
     #   cf. prepare_sample_hdf in join_data_preparation.py
     logger.info(f" - Prepare all tables")
-    prepare_all_tables(schema, dataset_hdf_path, args.csv_seperator, max_table_data = args.max_rows_per_hdf_file)
+    logger.info("  skip ")
+    #prepare_all_tables(schema, dataset_hdf_path, args.csv_seperator, max_table_data = args.max_rows_per_hdf_file)
     logger.info(f"Metadata(HDF files) successfully created")
     
+    #####
     # TRAIN RSPNs - NEW or UPDATE
+    # TODO: separate this as an REST API
+    # TODO: add another strategies (e.g. relationship, rdc_based)
+    #####
     logger.info(f"TRAIN RSPNs")
     logger.info(f" - create instance path (if not exists): {args.ensemble_path}")
     if not os.path.exists(args.ensemble_path):
         os.makedirs(args.ensemble_path)
 
     logger.info(f" - learn RSPNs by 'single' strategy")
-    if args.ensemble_strategy == 'single':
+    if args.ensemble_strategy == 'single': # XXX: 
+        logger.info("  skip ")
+        """
         create_naive_all_split_ensemble(schema, args.hdf_path, args.samples_per_spn[0], args.ensemble_path,
                                         args.dataset, args.bloom_filters, args.rdc_threshold,
                                         args.max_rows_per_hdf_file, args.post_sampling_factor[0],
                                         incremental_learning_rate=args.incremental_learning_rate)
+        """
     
-    logger.info(f"Bookmark")
-
 
     # ESTIMATE
-    # TODO
+    # TODO: separate this as an REST API
+    # FIXME: incorrect answer (3421083 vs 9853061) 
+    logger.info(f"ESTIMATE AGGs")
+    query_string = "SELECT COUNT(*) FROM orders" #"SELECT SUM(order_id) FROM orders"
+    ensemble_location = args.ensemble_location
+    show_confidence_intervals = True
+    logger.info(f" - Query: {query_string}, Model: {ensemble_location}")
+    logger.info(f" - Show Confidence Intervals: {show_confidence_intervals}")
+    result = evaluate_an_aqp_query(ensemble_location, query_string, schema, show_confidence_intervals)
+    logger.info(f"Result: {result}")
+
+    logger.info(f"Bookmark")
 
     #
     # CONF.RESTAPI

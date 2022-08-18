@@ -1,7 +1,7 @@
 import psycopg2
 import pandas as pd
 
-from ensemble_compilation.utils import gen_full_join_query, print_conditions
+from train.ensemble_compilation.utils import gen_full_join_query, print_conditions
 
 
 class DBConnection:
