@@ -51,6 +51,8 @@ def create_naive_all_split_ensemble(schema, hdf_path, sample_size, ensemble_path
     logger.info(f"Saving ensemble to {ensemble_path}")
     spn_ensemble.save(ensemble_path)
 
+    return ensemble_path # kihyuk-nam
+
 
 def naive_every_relationship_ensemble(schema, hdf_path, sample_size, ensemble_path, dataset, bloom_filters,
                                       rdc_threshold, max_table_data, post_sampling_factor,
@@ -90,3 +92,5 @@ def naive_every_relationship_ensemble(schema, hdf_path, sample_size, ensemble_pa
     ensemble_path += '/ensemble_relationships_' + dataset + '_' + str(sample_size) + '.pkl'
     logger.info(f"Saving ensemble to {ensemble_path}")
     spn_ensemble.save(ensemble_path)
+
+    return ensemble_path # kihyuk-nam

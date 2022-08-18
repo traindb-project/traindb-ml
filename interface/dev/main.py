@@ -27,3 +27,16 @@ def read_root():
 @app.get("/items/{item_id}")
 def read_item(item_id: int, q: Union[str, None] = None):
     return {"item_id": item_id, "q": q}
+
+"""
+@app.on_event("shutdown")
+def shutdown_event():
+    with open("log.txt", mode="a") as log:
+        log.write("Application shutdown")
+    return 
+
+@app.on_event("startup")
+def startup_event():
+    with open("log.txt", mode="a") as log:
+        log.write("Application startup")
+"""

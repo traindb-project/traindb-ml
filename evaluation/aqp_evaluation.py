@@ -7,8 +7,8 @@ import numpy as np
 
 import math
 
-from ensemble_compilation.physical_db import DBConnection
-from ensemble_compilation.spn_ensemble import read_ensemble
+from train.ensemble_compilation.physical_db import DBConnection
+from train.ensemble_compilation.spn_ensemble import read_ensemble
 from evaluation.utils import parse_query, save_csv
 
 logger = logging.getLogger(__name__)
@@ -86,6 +86,38 @@ def compute_relative_error(true, predicted, debug=False):
         logger.debug(f"\t\ttrue          : {true:.2f}")
         logger.debug(f"\t\trelative_error: {100 * relative_error:.2f}%")
     return abs(relative_error)
+
+
+def evaluate_an_aqp_query(ensemble_location, query_string, schema, show_confidence_intervals=True):
+    """
+    Loads ensemble and computes approximation for the given query
+    :param ensemble_location:
+    :param query_filename:
+    :param schema:
+    :return:
+    """
+
+    # read ensemble(s)
+    # - ensemble_location can be a list of paths or a single path
+    logger.info(f" Read the ensemble in {ensemble_location}")
+    spn_ensemble = read_ensemble(ensemble_location, build_reverse_dict=True)
+    logger.info(f" : {spn_ensemble}")
+
+    # evaluate the query
+    # - TODO kihyuk-nam: re-organize the parameters
+    query = parse_query(query_string.strip(), schema) # XXX kihyuk-nam: ad-hoc solution...
+    logger.info(f" Evaluate '{query_string}:{query}'")
+    confidence_intervals, aqp_result = \
+        spn_ensemble.evaluate_query(query, 
+                                    rdc_spn_selection=False,
+                                    pairwise_rdc_path=None,
+                                    merge_indicator_exp=True,
+                                    max_variants=10,
+                                    exploit_overlapping=False,
+                                    debug=True, # TODO kihyuk-nam
+                                    confidence_sample_size=10000000, # TODO kihyuk-nam: check
+                                    confidence_intervals=show_confidence_intervals)
+    return confidence_intervals, aqp_result
 
 
 def evaluate_aqp_queries(ensemble_location, query_filename, target_path, schema, ground_truth_path,

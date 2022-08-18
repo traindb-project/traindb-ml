@@ -219,9 +219,9 @@ def read_ensemble(ensemble_locations, build_reverse_dict=False):
             current_ensemble = pickle.load(handle)
             ensemble.schema_graph = current_ensemble.schema_graph
             for spn in current_ensemble.spns:
-                logging.debug(f"Including SPN with table_set {spn.table_set} with sampling ratio"
+                logging.debug(f" - Including SPN with table_set {spn.table_set} with sampling ratio"
                               f"({spn.full_sample_size} / {spn.full_join_size})")
-                # logging.debug(f"Stats: ({get_structure_stats(spn.mspn)})")
+                logging.debug(f"Stats: ({get_structure_stats(spn.mspn)})")
                 # build reverse dict.
                 if build_reverse_dict:
                     _build_reverse_spn_dict(spn)
@@ -736,6 +736,7 @@ class SPNEnsemble:
         :return:
         """
 
+        logger.debug(f" In evaluate_query") # FIXME 01 kihyuk-nam
         result_tuples = None
         technical_group_by_scopes = []
         if len(query.group_bys) > 0:
@@ -747,7 +748,8 @@ class SPNEnsemble:
             if debug:
                 logger.debug(f"\t\tcomputed {len(result_tuples)} group by statements "
                              f"in {group_by_end_t - group_by_start_t} secs.")
-
+ 
+        logger.debug(f" query.query_type = {query.query_type}") # FIXME 01 kihyuk-nam
         # if cardinality query simply return it
         if query.query_type == QueryType.CARDINALITY or any(
                 [aggregation_type == AggregationType.SUM or aggregation_type == AggregationType.COUNT
@@ -778,6 +780,7 @@ class SPNEnsemble:
                     logger.debug(f"\t\tpredicted cardinality: {cardinalities}")
                 logger.debug(f"\t\tcomputed prototypical cardinality in {prot_card_end_t - prot_card_start_t} secs.")
             if len(query.group_bys) == 0 and confidence_intervals:
+                logger.debug(f" if len(query.group_bys) == 0 and confidence_intervals") # FIXME 01 kihyuk-nam
                 _, factors_no_overlap, _, _ = self.cardinality(prototype_query,
                                                                rdc_spn_selection=rdc_spn_selection,
                                                                pairwise_rdc_path=pairwise_rdc_path,
@@ -793,6 +796,7 @@ class SPNEnsemble:
                                                                                  confidence_intervals=True,
                                                                                  confidence_interval_samples=confidence_sample_size)
             if len(query.group_bys) > 0:
+                logger.debug(f" if len(query.group_bys) > 0") # FIXME 01 kihyuk-nam
                 _, cardinalities = evaluate_factors_group_by(
                     artificially_added_conditions, False,
                     debug, factor_values, factors, result_tuples,
@@ -836,7 +840,9 @@ class SPNEnsemble:
             lower_bound = prediction - z_factor * confidence_interval_std.item()
             upper_bound = prediction + z_factor * confidence_interval_std.item()
 
+            logger.debug(f" lower_bound: {lower_bound}, upper_bound: {upper_bound}") # FIXME 01 kihyuk-nam
             return lower_bound, upper_bound
+
 
         if query.query_type == QueryType.CARDINALITY:
             if confidence_intervals:
@@ -844,6 +850,12 @@ class SPNEnsemble:
             return None, cardinalities
 
         result_values = None
+
+        #####
+        # FIXME 01 kihyuk-nam:  from here (when !CARDINALITY, e.g., SUM, AVG, ...)
+        #####
+
+        logger.debug(f" query.query_type = {query.query_type}") # FIXME 01 kihyuk-nam
         if all_operations_of_type(AggregationType.SUM, query) or all_operations_of_type(AggregationType.AVG, query):
 
             operation = None
@@ -857,6 +869,9 @@ class SPNEnsemble:
                     avg_stds = np.zeros((1, 1))
 
             for aggregation_operation_type, aggregation_type, factors in query.aggregation_operations:
+                logger.debug(f" aggregation_operation_type = {aggregation_operation_type}") # FIXME 01 kihyuk-nam
+                logger.debug(f" aggregation_type = {aggregation_type}") # FIXME 01 kihyuk-nam
+                logger.debug(f" factors = {factors}") # FIXME 01 kihyuk-nam
                 # just the operation on the aggregations
                 if aggregation_operation_type == AggregationOperationType.PLUS or \
                         aggregation_operation_type == AggregationOperationType.MINUS:
@@ -869,6 +884,8 @@ class SPNEnsemble:
                     exp_start_t = perf_counter()
                     # todo. incorporate rdc values
                     expectation_spn, expectation = self._greedily_select_expectation_spn(query, factors)
+                    logger.debug(f" expectation_spn: {expectation_spn}") # FIXME 01 kihyuk-nam
+                    logger.debug(f" expectation: {expectation}") # FIXME 01 kihyuk-nam
                     if confidence_intervals:
                         current_stds, aggregation_result = expectation_spn.evaluate_expectation_batch(
                             expectation,
@@ -1305,7 +1322,7 @@ class SPNEnsemble:
                     normalizing_multipliers = spn.compute_multipliers(query)
                     expectation = Expectation(features, normalizing_multipliers, conditions, spn=first_spn)
 
-        assert first_spn is not None, "Did not find SPN offering all features"
+        # FIXME kihyuk-nam: assert first_spn is not None, "Did not find SPN offering all features"
 
         return first_spn, expectation
 
