@@ -7,11 +7,14 @@ Python 3.8 on Ubuntu 20.04
 ## Setting up
 ```
 # git clone https://github.com/traindb-project/traindb-ml.git
+
 # cd traindb-ml
 // create venv or conda
 (venv) #
+
 // install dependencies. (pip == pip3) For example,
-(venv) # pip install numpy pandas fastapi uvicorn spflow, sqlparse, psycopg2
+(venv) # pip install numpy pandas tables fastapi uvicorn spflow, sqlparse, psycopg2
+
 // which is the same as the following:
 //(venv) # pip install -r requirements.txt
 ```
