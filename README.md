@@ -5,18 +5,25 @@ Remote ML Model Serving Component for TrainDB
 Python 3.8 on Ubuntu 20.04
 
 ## Setting up
+Download the codes.
 ```
 # git clone https://github.com/traindb-project/traindb-ml.git
-
 # cd traindb-ml
-// create venv or conda
+```
+Create a virtual environment (using venv or conda).
+
+For venv: (See:https://docs.python.org/3/library/venv.html)
+```
+# python3 -m venv venv 
+# source venv/bin/activate
 (venv) #
+```
 
-// install dependencies. (pip == pip3) For example,
+Install dependencies. For example,
+```
 (venv) # pip install numpy pandas tables fastapi uvicorn spflow, sqlparse, psycopg2
-
-// which is the same as the following:
-//(venv) # pip install -r requirements.txt
+// Here 'pip' means 'pip3', and it's the same as the following:
+// (venv) # pip install -r requirements.txt
 ```
 ## Launching a REST API for development (using Fast API)
 ```
