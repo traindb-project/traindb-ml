@@ -155,6 +155,22 @@ def train(schema, dataset='instacart', ensemble_path='model/instances',
           incremental_learning_rate=0, incremental_condition=''):
     # TODO: add another strategies (e.g. relationship, rdc_based)
     # TODO: update
+    """
+    Learn the dataset and generate an SPN representation of it
+    :param schema:
+    :param dataset:
+    :param ensemble_path:
+    :param strategy:
+    :param rdc_threshold:
+    :param samples_per_spn:
+    :param bloom_filters:
+    :param max_rows_per_hdf_file:
+    :param post_sampling_factor:
+    :param incremental_learning_rate:
+    :param incremental_condition:
+    :return:
+    """
+    
 
     logger.info(f"TRAIN RSPNs")
     if not os.path.exists(ensemble_path):
@@ -213,14 +229,11 @@ if __name__ == '__main__':
     #####
     # ARGS - command-line options
     #      - should match the REST API, Knative interface
+    # TODO: cleanup unused args
     #####
     parser = argparse.ArgumentParser()
 
     # ARGS.REST 
-    parser.add_argument('--rest_dir', default='interface/dev/', 
-                        help='location of the fastapi main file')
-    parser.add_argument('--rest_main', default='main', 
-                        help='name of the fastapi main file. *.py')
     parser.add_argument('--rest_host', default='0.0.0.0', 
                         help='IP address of the REST API')
     parser.add_argument('--rest_port', default='8000', 
@@ -282,6 +295,7 @@ if __name__ == '__main__':
     #####
     # CONF.Logging 
     # - copied from deepdb's maqp.py
+    # - depends: args.log_level, args.dataset
     #
     os.makedirs('logs', exist_ok=True)
     logging.basicConfig(

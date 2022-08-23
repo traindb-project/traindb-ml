@@ -18,12 +18,17 @@ Python 3.8 on Ubuntu 20.04
 // which is the same as the following:
 //(venv) # pip install -r requirements.txt
 ```
-## Start
+## Launching a REST API for development (using Fast API)
 ```
-(venv) # python3 main.py --csv_path your_dir/orders.csv
+(venv) # python3 main.py
+```
+The default host address and port (http://0.0.0.0:8000) will be applied if no args specified
+For setting up your own address/port (e.g., http://127.0.0.1:8080):
+```
+(venv) # python3 main.py --rest_host 127.0.0.1 --rest_port 8080
 ```
 
-## For KubeFlow
+## Using KubeFlow
 - See [/interface/kubeflow](https://github.com/traindb-project/traindb-ml/tree/main/interface/kubeflow)
 
 ## License
