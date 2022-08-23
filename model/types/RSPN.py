@@ -10,10 +10,11 @@
    limitations under the License.
 """
 
-from TrainDBBaseModel import TrainDBModel
+from model.types.TrainDBBaseModel import TrainDBModel
 import os
 import logging
 import time
+import requests
 
 class RSPN(TrainDBModel):
     """SPN-based model for TrainDB"""
@@ -38,6 +39,71 @@ class RSPN(TrainDBModel):
         self.logger.info("initialization")
 
 
+    def train(self, url, model_name, dataset_path):
+        """
+        call the REST API: /train
+        :param url: default, http://0.0.0.0:8000/train
+        :param model_name: name of model(or dataset to be learned)
+        :param dataset_path: location of the dataset (e.g., ~/mydataset/orders.csv)
+        :returns: path of the generated model(.pkl) if suceess
+        """
+        self.logger.info(f"learn the {model_name} in {dataset_path}")
+        #url = 'http://0.0.0.0:8000/train/'
+        #model_name = 'instacart'
+        #dataset_path = '~/Projects/datasets/instacart/orders.csv'
+
+        self.model_name = model_name
+        self.dataset_path = dataset_path
+
+        payload = {'dataset':model_name, 'csv_path':dataset_path}
+        response = requests.post(url, json=payload)
+        result = response.json()
+        self.logger.info(f"response status:{response.status_code}")
+        if (response.status_code == requests.codes.ok):
+            self.model_path = result['Created']
+            self.logger.info(f"generated an RSPN ensemble in {self.model_path}.")
+        
+        return self.model_path
+
+    # TODO:  
+    def update(self, model_name, new_data):
+        """
+        call the REST API: /update
+        :param url: default, http://0.0.0.0:8000/docs
+        :param model_name: name of model(or dataset to be learned)
+        :param dataset_path: location of the dataset (e.g., ~/mydataset/orders.csv)
+        :returns: path of the generated model(.pkl) if suceess
+        """
+        self.logger.info(f"update the {model_name} model by {new_data}")
+
+    def estimate(self, url, query, dataset, model_path, show_confidence_intervals):
+        """
+        call the REST API: /estimate
+        :param url: default, http://0.0.0.0:8000/estimate/
+        :param query: an SQL statement with aggregations to be approximated
+        :param dataset: name of model(or dataset previously learned)
+        :param model_path: location of the learned model
+        :param show_confidence_intervals: yes or no
+        :returns: estimated value with confidence intervals
+        """
+        self.logger.info("get an approximated aggregation value for {query}")
+        #query = 'SELECT COUNT(*) FROM orders'
+        #dataset = 'instacart' 
+        #model_path = 'model/instances/ensemble_single_instacart_10000000.pkl' 
+        #show_confidence_intervals = 'true'
+        payload = {'query':query,                      
+                   'dataset':dataset,                  
+                   'ensemble_location':model_path,     
+                   'show_confidence_intervals':show_confidence_intervals}
+
+        response = requests.get(url, params=payload)
+        result = response.json()
+        self.logger.info(f"response status:{response.status_code}")
+        if (response.status_code == requests.codes.ok):
+            return result['Estimated Value']
+        
+        return result
+
     def train(self, real_data, table_metadata): 
         self.logger.info("learn an RSPN ensemble")
 
@@ -47,31 +113,9 @@ class RSPN(TrainDBModel):
     def load(self, input_path):
         self.logger.info("load the given model")
 
-    # TODO: define the parameter types, 
-    # cf. REST API: /train/{model_name}/{dataset}/{metadata}
-    def train(self, model_name, dataset, dataset_metadata):
-        self.logger.info("learn an RSPN ensemble and give the name to it")
-        self.model_name = model_name
-        train(self, dataset, dataset_metadata)
-
-    # TODO: .pkl or .pth
     def save(self, output_path, file_type):
-        if (file_type == "pkl"):
-            self.logger.info("save the output as .pkl")
-        else:
-            self.logger.info("save the output as .pth")
+        self.logger.info("save the output ")
 
-
-    # TODO: define the parameter types, 
-    # cf. REST API: /train/{model_name}/{dataset}/{metadata}
-    def update(self, model_name, new_data):
-        self.logger.info(f"update the {model_name} model by {new_data}")
-
-    # TODO: define the parameter types, 
-    #       see if it's compatible with the way TrainDB process AQPs
-    # cf. REST API: /estimate/{query_parameters:agg_type, from, filter}
-    def estimate(self, query_parameters):
-        self.logger.info("get an approximated aggregation value for the query")
 
     def transform(self, input_model, output_model):
         self.logger.info("Transform the input .pkl into the output .pth")
