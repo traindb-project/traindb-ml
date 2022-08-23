@@ -22,7 +22,8 @@ Python 3.8 on Ubuntu 20.04
 ```
 (venv) # python3 main.py
 ```
-The default host address and port (http://0.0.0.0:8000) will be applied if no args specified
+The default host address and port (http://0.0.0.0:8000) will be applied if no args specified.
+
 For setting up your own address/port (e.g., http://127.0.0.1:8080):
 ```
 (venv) # python3 main.py --rest_host 127.0.0.1 --rest_port 8080
