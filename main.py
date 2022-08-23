@@ -28,42 +28,38 @@ from evaluation.aqp_evaluation import evaluate_an_aqp_query
 #####
 from typing import Union
 from fastapi import FastAPI
+from pydantic import BaseModel
 import uvicorn
+
+class Target(BaseModel):
+    dataset: str
+    csv_path: str
 
 app = FastAPI()
 schema = None
 dataset_hdf_path = 'data/files/instacart/hdf'
 table_csv_path = 'data/files/instacart/csv'+'{}.csv'
 
-@app.post("/train/{dataset}")
-def aqp_create(dataset: str, csv_path: str):
-    schema = data_preparation(dataset, csv_path)
-    result = train(schema) # XXX
+@app.post("/train/")
+async def app_train(target: Target):
+    schema = data_preparation(target.dataset, target.csv_path)
+    result = train(schema)
     return {"Created": result, "Status": "OK"}
 
-@app.get("/estimate/{query}")
+@app.get("/estimate/")
 def aqp_read(query: str, dataset: str, ensemble_location: str, show_confidence_intervals: bool):
     #if schema is None:
     #    return {"Result":"The schema is not available"}
-
     value = estimate(schema, dataset, query, ensemble_location, show_confidence_intervals)
     return {"Query": query, "Estimated Value": value}
 
-@app.put("/update/{sql}")
+@app.put("/update/")
 def aqp_update(sql: str):
     return {"Query": sql, "Updated" : "OK"}
 
-@app.post("/delete/{model}")
+@app.post("/delete/")
 def aqp_create(model: str):
     return {"Deleted": model, "Status": "OK"}
-
-@app.get("/")
-def read_root():
-    return {"Hello": "World"}
-
-@app.get("/items/{item_id}")
-def read_item(item_id: int, q: Union[str, None] = None):
-    return {"item_id": item_id, "q": q}
 
 @app.on_event("shutdown")
 def shutdown_event():
