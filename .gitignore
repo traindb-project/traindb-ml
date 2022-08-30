@@ -6,5 +6,4 @@ __pycache__/
 logs/
 .DS_Store
 *.csv
-data/files/instacart
-test.py
+*.hdf
