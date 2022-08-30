@@ -20,9 +20,20 @@ Python 3.8 on Ubuntu 20.04
 
 3. Install dependencies. For example,
 ```
-(venv) # pip install numpy pandas tables fastapi uvicorn spflow, sqlparse, psycopg2
+(venv) # pip install numpy pandas tables spflow, sqlparse, psycopg2, 
+// If you want to use the Fast API, install the followings as well
+(venv) # pip install fastapi uvicorn requests
 // Here 'pip' means 'pip3', and it's the same as the following:
 // (venv) # pip install -r requirements.txt
+```
+## Test non-REST version
+1. Execute the test-model.py
+```
+(venv) # python3 test.py
+(some warnings...)
+model/instances/ensemble_single_instacart_10000000.pkl
+SELECT COUNT(*) FROM orders WHERE order_dow >= 2
+((1343995.131280017, 1347515.079651983), 1345755.105466)
 ```
 ## Launching a REST API for devel/testing (using Fast API)
 1. Execute the main.py. The default host address and port (http://0.0.0.0:8000) will be applied if no args specified.
@@ -98,8 +109,7 @@ Python 3.8 on Ubuntu 20.04
   print(result['Estimated Value'])
   ```
 ## Using KubeFlow
-- See [/interface/kubeflow](https://github.com/traindb-project/traindb-ml/tree/main/interface/kubeflow)
+- See [/interface](https://github.com/traindb-project/traindb-ml/tree/main/interface)
 
 ## License
 This project is dual-licensed. Apache 2.0 is for traindb-ml, and MIT is for the RSPN codes from deepdb(https://github.com/DataManagementLab/deepdb-public)
-
