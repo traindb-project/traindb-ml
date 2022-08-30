@@ -1,4 +1,6 @@
-# Interfaces for traindb-ml
+# TrainDB-ML interfaces
 
-- dev: simple REST api using Fast API (for development)
-- kubeflow: for production
+
+## Initial Design
+
+![](https://sungsoo.github.io/images/initial-design.png)
